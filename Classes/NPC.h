@@ -29,15 +29,15 @@ private:
 
     // 定义对话内容
     const std::vector<std::string> NPC1_DIALOG = {
-        "今天的天气真不错！"
+        "今天天气真不错！"
     };
 
     const std::vector<std::string> NPC2_DIALOG = {
-        "你需要什么帮助吗？"
+        "很高兴见到你！"
     };
 
     const std::vector<std::string> NPC3_DIALOG = {
-        "很高兴见到你！"
+        "请问你需要什么帮助吗？"
     };
 };
 

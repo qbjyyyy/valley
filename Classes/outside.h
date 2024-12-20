@@ -76,6 +76,9 @@ private:
     cocos2d::Rect targetArea;
     cocos2d::Sprite* _lastSprite = nullptr;
     cocos2d::MenuItemImage* _closeButton;   // 关闭按钮
+    cocos2d::MenuItemImage* _npc1Button;   // npc1按钮
+    cocos2d::MenuItemImage* _npc2Button;   // npc2按钮
+    cocos2d::MenuItemImage* _npc3Button;   // npc3按钮
     std::chrono::high_resolution_clock::time_point gameStartTime; // 游戏开始时间
     int gameTime; // 游戏内的时间（以分钟为单位）
 

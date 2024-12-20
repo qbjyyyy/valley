@@ -75,6 +75,102 @@ void outside::loadMapBackground(int mapIndex) {
             CCLOG("Error: Failed to create character!");
         }
 
+        // 创建npc1按钮
+        auto _npc1Button = Button::create(
+            "picture/NPC1.png",
+            "picture/NPC1.png"
+        );
+
+        // 设置npc1按钮的位置
+        _npc1Button->setPosition(Vec2(x - 100, y - 100));
+        auto moveTo1 = MoveTo::create(40.0f, Vec2(x - 600, y - 440)); // NPC1 的移动动作
+        auto scaleBy1 = ScaleBy::create(5.0f, 5.0f);
+        _npc1Button->runAction(moveTo1);
+        this->addChild(_npc1Button);
+
+        // 添加触摸事件监听器
+        _npc1Button->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type) {
+            if (type == Widget::TouchEventType::ENDED) {
+                auto dialogImage = Sprite::create("picture/npc1_dialog.png");
+                if (!dialogImage) {
+                    CCLOG("Error: Failed to create dialog image for NPC1!");
+                    return;
+                }
+                dialogImage->setPosition(Vec2(600, 400)); // 设置对话框位置
+                this->addChild(dialogImage, 10); // 添加到场景中，确保在最上层
+                // 这里添加一个定时器或触摸事件来关闭对话框
+                auto delay = DelayTime::create(3.0f); // 3秒后自动关闭
+                auto removeDialog = CallFunc::create([dialogImage]() {
+                    dialogImage->removeFromParentAndCleanup(true);
+                    });
+                dialogImage->runAction(Sequence::create(delay, removeDialog, nullptr));
+            }
+            });
+
+        // 创建npc2按钮
+        auto _npc2Button = Button::create(
+            "picture/NPC2.png",
+            "picture/NPC2.png"
+        );
+
+        // 设置npc2按钮的位置
+        _npc2Button->setPosition(Vec2(x - 200, y - 150));
+        auto moveTo2 = MoveTo::create(40.0f, Vec2(x - 1600, y - 850)); // NPC2 的移动动作
+        auto scaleBy2 = ScaleBy::create(5.0f, 5.0f);
+        _npc2Button->runAction(moveTo2);
+        this->addChild(_npc2Button);
+
+        // 添加触摸事件监听器
+        _npc2Button->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type) {
+            if (type == Widget::TouchEventType::ENDED) {
+                auto dialogImage = Sprite::create("picture/npc2_dialog.png");
+                if (!dialogImage) {
+                    CCLOG("Error: Failed to create dialog image for NPC2!");
+                    return;
+                }
+                dialogImage->setPosition(Vec2(600, 400)); // 设置对话框位置
+                this->addChild(dialogImage, 10); // 添加到场景中，确保在最上层
+                // 这里添加一个定时器或触摸事件来关闭对话框
+                auto delay = DelayTime::create(3.0f); // 3秒后自动关闭
+                auto removeDialog = CallFunc::create([dialogImage]() {
+                    dialogImage->removeFromParentAndCleanup(true);
+                    });
+                dialogImage->runAction(Sequence::create(delay, removeDialog, nullptr));
+            }
+            });
+
+        // 创建npc3按钮
+        auto _npc3Button = Button::create(
+            "picture/NPC3.png",
+            "picture/NPC3.png"
+        );
+
+        // 设置npc3按钮的位置
+        _npc3Button->setPosition(Vec2(x - 300, y - 200));
+        auto moveTo3 = MoveTo::create(40.0f, Vec2(x - 80, y - 1050)); // NPC3 的移动动作
+        auto scaleBy3 = ScaleBy::create(5.0f, 5.0f);
+        _npc3Button->runAction(moveTo3);
+        this->addChild(_npc3Button);
+
+        // 添加触摸事件监听器
+        _npc3Button->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type) {
+            if (type == Widget::TouchEventType::ENDED) {
+                auto dialogImage = Sprite::create("picture/npc3_dialog.png");
+                if (!dialogImage) {
+                    CCLOG("Error: Failed to create dialog image for NPC3!");
+                    return;
+                }
+                dialogImage->setPosition(Vec2(600, 400)); // 设置对话框位置
+                this->addChild(dialogImage, 10); // 添加到场景中，确保在最上层
+                // 这里添加一个定时器或触摸事件来关闭对话框
+                auto delay = DelayTime::create(3.0f); // 3秒后自动关闭
+                auto removeDialog = CallFunc::create([dialogImage]() {
+                    dialogImage->removeFromParentAndCleanup(true);
+                    });
+                dialogImage->runAction(Sequence::create(delay, removeDialog, nullptr));
+            }
+            });
+
         this->scheduleUpdate();
         setViewPointCenter(characteraction->getPosition(), tiledMap);
 
