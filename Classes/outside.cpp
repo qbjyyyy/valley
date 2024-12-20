@@ -201,9 +201,10 @@ bool outside::init()
     // 更新游戏内时间
     schedule(schedule_selector(outside::updateTime), 1.0f);
 
+   
     // 创建签到窗口
     auto qiandaoWindow = Sprite::create("picture/qiandao.png");
-    qiandaoWindow->setPosition(Vec2(visibleSize.width / 8 + origin.x, visibleSize.height / 1.5 + origin.y));
+    qiandaoWindow->setPosition(Vec2(visibleSize.width / 8 + origin.x, visibleSize.height / 2 + origin.y));
     this->addChild(qiandaoWindow, 10); // 设置较高的z轴，确保窗口在最上层
 
     // 创建签到按钮
@@ -456,39 +457,23 @@ void outside::showPersonalInterface()
     _menuWindow = Sprite::create("picture/1.png");
 
     // 设置窗口位置为屏幕中央
-    _menuWindow->setPosition(Vec2(600,700));
+    _menuWindow->setPosition(Vec2(400,500));
 
     // 设置窗口大小为屏幕的 80%
-    _menuWindow->setScale(1.2f);
+    _menuWindow->setScale(1.0f);
 
     _personalInterfaceLayer->addChild(_menuWindow);
 
     // 创建关闭按钮
-    /*_closeButton = MenuItemImage::create(
+    _closeButton = MenuItemImage::create(
         "picture/bottom2.png",
         "picture/bottom2.png",
-        [](Ref* sender) {
-            auto scene = Director::getInstance()->getRunningScene();
-            outside* helloWorld = dynamic_cast<outside*>(scene);
-            if (helloWorld) {
-                helloWorld->closePersonalInterface();
-            }
-        }
-    );*/
-
-    /*auto closeButton = Button::create("picture/bottom2.png");
-    closeButton->setPosition(Vec2(qiandaoWindow->getContentSize().width - closeButton->getContentSize().width / 2, qiandaoWindow->getContentSize().height - closeButton->getContentSize().height / 2));
-    closeButton->addTouchEventListener([qiandaoWindow](Ref* sender, Widget::TouchEventType type) {
-        if (type == Widget::TouchEventType::ENDED) {
-            // 关闭签到窗口
-            qiandaoWindow->removeFromParentAndCleanup(true);
-        }
-        });
-    qiandaoWindow->addChild(closeButton);*/
+        CC_CALLBACK_1(outside::closePersonalInterface, this) // 使用 CC_CALLBACK_1 绑定 this
+    );
 
     // 设置关闭按钮的位置
     auto windowSize = _menuWindow->getContentSize();
-    _closeButton->setPosition(Vec2(windowSize.width + 40, windowSize.height + 40)); // 在窗口内适当位置
+    _closeButton->setPosition(Vec2(windowSize.width - _closeButton->getContentSize().width / 2 + 60, windowSize.height - _closeButton->getContentSize().height / 2 + 60)); // 在窗口内适当位置
 
     // 创建菜单并添加关闭按钮
     auto closeMenu = Menu::create(_closeButton, NULL);
@@ -513,7 +498,7 @@ void outside::showPersonalInterface()
         );
 
         // 设置按钮的初始位置
-        button->setPosition(Vec2(-visibleSize.width / 3 + 80 * i, visibleSize.height / 2 - 80));
+        button->setPosition(Vec2(-visibleSize.width / 2 + 80 * i, visibleSize.height / 2.55 - 80));
         buttonMenu->addChild(button, 0, i);
     }
 
@@ -521,12 +506,26 @@ void outside::showPersonalInterface()
     _personalInterfaceLayer->addChild(buttonMenu, 1);
 }
 
+
+
 void outside::selectImage(int index)
 {
     _currentImageIndex = index;
 
     // 更新主图片
     std::string imageName = StringUtils::format("picture/%d.png", _currentImageIndex);
+
+    // 如果当前选择的图片是 3.png，则显示竖排按钮
+    if (_currentImageIndex == 3)
+    {
+        showVerticalButtons();
+    }
+    else
+    {
+        // 如果当前选择的图片不是 3.png，则移除竖排按钮
+        removeVerticalButtons();
+    }
+
     if (_menuWindow)
     {
         _menuWindow->setTexture(imageName);
@@ -554,20 +553,94 @@ void outside::selectImage(int index)
     }
 }
 
-void outside::switchImage(int direction)
+
+void outside::showVerticalButtons()
 {
-    _currentImageIndex = (_currentImageIndex + direction + 7 - 1) % 7 + 1; // 循环切换 1 到 7
+    // 获取当前窗口的大小
+    auto windowSize = _menuWindow->getContentSize();
 
-    std::string imageName = StringUtils::format("picture/%d.png", _currentImageIndex);
-    if (_menuWindow)
+    // 创建一个层来放置按钮
+    auto buttonLayer = Layer::create();
+    _menuWindow->addChild(buttonLayer);
+
+    // 在 3.png 图片上竖排放置 5 个按钮 bottom3.1.png
+    for (int i = 1; i <= 5; ++i)
     {
-        _menuWindow->setTexture(imageName);
+        auto button = Button::create("picture/giftbottom1.png", "picture/giftbottom1.png");
+        button->setPosition(Vec2(windowSize.width / 2 + 300, windowSize.height + 90 - 125 * i)); // 竖直排列
+        button->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type) {
+            if (type == Widget::TouchEventType::ENDED) {
+                showNewWindow(); // 点击按钮后跳出新的窗口
+            }
+            });
+        buttonLayer->addChild(button);
     }
-
-    selectImage(_currentImageIndex); // 更新按钮效果
 }
 
-void outside::closePersonalInterface()
+void outside::removeVerticalButtons()
+{
+    // 移除所有竖排按钮
+    _menuWindow->removeAllChildrenWithCleanup(true);
+}
+
+void outside::showNewWindow()
+{
+    // 创建新的窗口
+    auto newWindow = Sprite::create("picture/back.png");
+    newWindow->setPosition(Vec2(400, 500));
+    newWindow->setScale(1.0f);
+
+    // 添加到个人界面层
+    _personalInterfaceLayer->addChild(newWindow, 11); // 确保新窗口在最上层
+
+    // 创建关闭新窗口的按钮
+    auto closeNewWindowButton = Button::create("picture/ok1.png", "picture/ok1.png");
+    float scaleFactor = 1.5f; // 根据需要调整缩放比例
+    closeNewWindowButton->setScale(scaleFactor);
+    closeNewWindowButton->setPosition(Vec2(newWindow->getContentSize().width - closeNewWindowButton->getContentSize().width / 2 - 100, newWindow->getContentSize().height - closeNewWindowButton->getContentSize().height / 2 - 800));
+    closeNewWindowButton->addTouchEventListener([newWindow](Ref* sender, Widget::TouchEventType type) {
+        if (type == Widget::TouchEventType::ENDED) {
+            newWindow->removeFromParent(); // 关闭新窗口
+        }
+        });
+    newWindow->addChild(closeNewWindowButton);
+
+    // 创建6个按钮并横向排列
+    std::vector<Button*> giftButtons;
+    for (int i = 1; i <= 6; ++i) {
+        auto giftButton = Button::create("picture/gift" + std::to_string(i) + ".png", "picture/gift" + std::to_string(i) + ".png");
+        // 设置缩放比例，调整大小
+        float scaleFactor = 3.0f; // 根据需要调整缩放比例
+        giftButton->setScale(scaleFactor);
+        giftButton->setPosition(Vec2(100 + (i - 1) * 150, 800)); // 横向排列，每个按钮间隔150像素
+        giftButton->addTouchEventListener([newWindow, &giftButtons](Ref* sender, Widget::TouchEventType type) {
+            if (type == Widget::TouchEventType::ENDED) {
+                auto button = static_cast<Button*>(sender);
+                // 处理按钮点击事件
+            }
+            });
+        newWindow->addChild(giftButton);
+        giftButtons.push_back(giftButton);
+
+        // 在每个按钮下面添加一个 bottom.png 按钮
+        auto bottomButton = Button::create("picture/bottom.png", "picture/bottom1.png");
+        bottomButton->setPosition(Vec2(giftButton->getPositionX(), giftButton->getPositionY() - 100)); // 在按钮下方100像素处
+        bottomButton->addTouchEventListener([bottomButton](Ref* sender, Widget::TouchEventType type) {
+            if (type == Widget::TouchEventType::ENDED) {
+                // 切换按钮状态
+                if (bottomButton->getRendererNormal()->getTexture() == Director::getInstance()->getTextureCache()->addImage("picture/bottom.png")) {
+                    bottomButton->loadTextureNormal("picture/bottom1.png");
+                }
+                else {
+                    bottomButton->loadTextureNormal("picture/bottom.png");
+                }
+            }
+            });
+        newWindow->addChild(bottomButton);
+    }
+}
+
+void outside::closePersonalInterface(Ref* sender)
 {
     if (!_isPersonalInterfaceVisible) return;
 

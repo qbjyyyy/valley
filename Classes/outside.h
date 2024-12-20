@@ -35,7 +35,14 @@ public:
     void update(float delta, cocos2d::Sprite* _player);
     void changeScene();
 
-    
+    // 显示竖排按钮
+    void showVerticalButtons();
+
+    // 移除竖排按钮
+    void removeVerticalButtons();
+
+    // 显示新窗口
+    void showNewWindow();
 
     // 键盘指定方法
     void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
@@ -44,7 +51,7 @@ public:
     void showPersonalInterface();
 
     // 关闭个人界面
-    void closePersonalInterface();
+    void closePersonalInterface(Ref* sender);
 
     // 选择图像
     void selectImage(int index);
@@ -68,15 +75,15 @@ private:
     bool _isfishingVisible;
     cocos2d::Rect targetArea;
     cocos2d::Sprite* _lastSprite = nullptr;
-    
+    cocos2d::MenuItemImage* _closeButton;   // 关闭按钮
     std::chrono::high_resolution_clock::time_point gameStartTime; // 游戏开始时间
     int gameTime; // 游戏内的时间（以分钟为单位）
 
-   
+    // 用于存储竖排按钮的层
+    cocos2d::Layer * _verticalButtonLayer;
 
     cocos2d::Layer* _personalInterfaceLayer; // 个人界面层
     cocos2d::Sprite* _menuWindow;           // 菜单窗口
-    cocos2d::MenuItemImage* _closeButton;   // 关闭按钮
     bool _isPersonalInterfaceVisible;      // 跟踪个人界面是否可见
     int _currentImageIndex;                // 当前图像索引
     int _selectedButtonIndex;              // 选择按钮索引
