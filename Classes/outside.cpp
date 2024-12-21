@@ -49,7 +49,7 @@ void outside::loadMapBackground(int mapIndex) {
     if (tiledMap) {
         // 设置地图位置
         tiledMap->setPosition(Vec2(-500, -200));
-       
+        tiledMap->setScale(3);
         this->addChild(tiledMap, 0);
 
         auto imageView = ImageView::create("picture/time.png");
@@ -70,118 +70,30 @@ void outside::loadMapBackground(int mapIndex) {
         int x = spawnPoint["x"].asInt();
         int y = spawnPoint["y"].asInt();
 
-        auto characteraction = CharacterWithTools::create("character/Dana0.png");
+
+        characteraction = CharacterWithTools::create("character/Dana0.png");
         if (characteraction == nullptr) {
             CCLOG("Error: Failed to create character!");
         }
-
-        // 创建npc1按钮
-        auto _npc1Button = Button::create(
-            "picture/NPC1.png",
-            "picture/NPC1.png"
-        );
-
-        // 设置npc1按钮的位置
-        _npc1Button->setPosition(Vec2(x - 100, y - 100));
-        auto moveTo1 = MoveTo::create(40.0f, Vec2(x - 600, y - 440)); // NPC1 的移动动作
-        auto scaleBy1 = ScaleBy::create(5.0f, 5.0f);
-        _npc1Button->runAction(moveTo1);
-        this->addChild(_npc1Button);
-
-        // 添加触摸事件监听器
-        _npc1Button->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type) {
-            if (type == Widget::TouchEventType::ENDED) {
-                auto dialogImage = Sprite::create("picture/npc1_dialog.png");
-                if (!dialogImage) {
-                    CCLOG("Error: Failed to create dialog image for NPC1!");
-                    return;
-                }
-                dialogImage->setPosition(Vec2(600, 400)); // 设置对话框位置
-                this->addChild(dialogImage, 10); // 添加到场景中，确保在最上层
-                // 这里添加一个定时器或触摸事件来关闭对话框
-                auto delay = DelayTime::create(3.0f); // 3秒后自动关闭
-                auto removeDialog = CallFunc::create([dialogImage]() {
-                    dialogImage->removeFromParentAndCleanup(true);
-                    });
-                dialogImage->runAction(Sequence::create(delay, removeDialog, nullptr));
-            }
-            });
-
-        // 创建npc2按钮
-        auto _npc2Button = Button::create(
-            "picture/NPC2.png",
-            "picture/NPC2.png"
-        );
-
-        // 设置npc2按钮的位置
-        _npc2Button->setPosition(Vec2(x - 200, y - 150));
-        auto moveTo2 = MoveTo::create(40.0f, Vec2(x - 1600, y - 850)); // NPC2 的移动动作
-        auto scaleBy2 = ScaleBy::create(5.0f, 5.0f);
-        _npc2Button->runAction(moveTo2);
-        this->addChild(_npc2Button);
-
-        // 添加触摸事件监听器
-        _npc2Button->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type) {
-            if (type == Widget::TouchEventType::ENDED) {
-                auto dialogImage = Sprite::create("picture/npc2_dialog.png");
-                if (!dialogImage) {
-                    CCLOG("Error: Failed to create dialog image for NPC2!");
-                    return;
-                }
-                dialogImage->setPosition(Vec2(600, 400)); // 设置对话框位置
-                this->addChild(dialogImage, 10); // 添加到场景中，确保在最上层
-                // 这里添加一个定时器或触摸事件来关闭对话框
-                auto delay = DelayTime::create(3.0f); // 3秒后自动关闭
-                auto removeDialog = CallFunc::create([dialogImage]() {
-                    dialogImage->removeFromParentAndCleanup(true);
-                    });
-                dialogImage->runAction(Sequence::create(delay, removeDialog, nullptr));
-            }
-            });
-
-        // 创建npc3按钮
-        auto _npc3Button = Button::create(
-            "picture/NPC3.png",
-            "picture/NPC3.png"
-        );
-
-        // 设置npc3按钮的位置
-        _npc3Button->setPosition(Vec2(x - 300, y - 200));
-        auto moveTo3 = MoveTo::create(40.0f, Vec2(x - 80, y - 1050)); // NPC3 的移动动作
-        auto scaleBy3 = ScaleBy::create(5.0f, 5.0f);
-        _npc3Button->runAction(moveTo3);
-        this->addChild(_npc3Button);
-
-        // 添加触摸事件监听器
-        _npc3Button->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type) {
-            if (type == Widget::TouchEventType::ENDED) {
-                auto dialogImage = Sprite::create("picture/npc3_dialog.png");
-                if (!dialogImage) {
-                    CCLOG("Error: Failed to create dialog image for NPC3!");
-                    return;
-                }
-                dialogImage->setPosition(Vec2(600, 400)); // 设置对话框位置
-                this->addChild(dialogImage, 10); // 添加到场景中，确保在最上层
-                // 这里添加一个定时器或触摸事件来关闭对话框
-                auto delay = DelayTime::create(3.0f); // 3秒后自动关闭
-                auto removeDialog = CallFunc::create([dialogImage]() {
-                    dialogImage->removeFromParentAndCleanup(true);
-                    });
-                dialogImage->runAction(Sequence::create(delay, removeDialog, nullptr));
-            }
-            });
-
-        this->scheduleUpdate();
-        setViewPointCenter(characteraction->getPosition(), tiledMap);
-
-        tiledMap_ = tiledMap;
-
-        characteraction->setPosition(Vec2(x-300, y-400)); // 确保位置在屏幕范围内
+        characteraction->setPosition(Vec2(x - 300, y - 400));
         this->addChild(characteraction);
 
+        this->scheduleUpdate();
+        // 在每帧中更新视点位置，使地图始终跟随人物
+            this->schedule([=](float deltaTime) {
+            // 获取人物当前的世界坐标
+            Vec2 characterPosition = characteraction->getPosition();
+
+            // 更新视点，确保地图始终跟随人物
+            setViewPointCenter(characterPosition, tiledMap);
+            }, "view_point_update_key");
+
+        
+
+        //backgroundLayer->addChild(characteraction);
 
         auto keyboardListener = EventListenerKeyboard::create();
-        keyboardListener->onKeyPressed = [characteraction](EventKeyboard::KeyCode keyCode, Event* event) {
+        keyboardListener->onKeyPressed = [this](EventKeyboard::KeyCode keyCode, Event* event) {
             Vec2 direction = Vec2::ZERO; // 局部变量
             if (keyCode == EventKeyboard::KeyCode::KEY_W)
                 direction.y = 1;
@@ -193,7 +105,7 @@ void outside::loadMapBackground(int mapIndex) {
                 direction.x = 1; // 向右
             characteraction->move(direction); // 将键盘输入传递给角色
             };
-        keyboardListener->onKeyReleased = [characteraction](EventKeyboard::KeyCode keyCode, Event* event) {
+        keyboardListener->onKeyReleased = [this](EventKeyboard::KeyCode keyCode, Event* event) {
             Vec2 direction = Vec2::ZERO; // 局部变量
             if (keyCode == EventKeyboard::KeyCode::KEY_W)
                 direction.y = 0;
@@ -235,6 +147,7 @@ void outside::loadMapBackground(int mapIndex) {
     else {
         log("Failed to load TMX file: %s", tmxFileName.c_str());
     }
+
 }
 
 bool outside::init()
@@ -284,7 +197,9 @@ bool outside::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+
     auto dayLabel = Label::createWithTTF(dayOfWeek, "fonts/Marker Felt.ttf", 50);
+    dayLabel->setAnchorPoint(Vec2(1, 1));
     dayLabel->setPosition(Vec2(1400, 1553));
     
    
@@ -300,7 +215,8 @@ bool outside::init()
    
     // 创建签到窗口
     auto qiandaoWindow = Sprite::create("picture/qiandao.png");
-    qiandaoWindow->setPosition(Vec2(visibleSize.width / 8 + origin.x, visibleSize.height / 2 + origin.y));
+
+    qiandaoWindow->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2+200));
     this->addChild(qiandaoWindow, 10); // 设置较高的z轴，确保窗口在最上层
 
     // 创建签到按钮
@@ -393,7 +309,7 @@ bool outside::init()
         });
     
   
-    
+    this->scheduleUpdate();
     
     return true;
 }
@@ -483,17 +399,31 @@ void outside::onTouchEnded(Touch* touch, Event* unused_event, cocos2d::TMXTiledM
 }
 
 void outside::setViewPointCenter(Point position, cocos2d::TMXTiledMap* tiledMap) {
-    auto winSize = Director::getInstance()->getWinSize();
+    const auto winSize = Director::getInstance()->getWinSize();
+    float scale = tiledMap->getScale(); // 获取当前的缩放比例
 
+    // 计算实际的视图中心坐标（考虑缩放）
     int x = MAX(position.x, winSize.width / 2);
     int y = MAX(position.y, winSize.height / 2);
 
-    x = MIN(x, ( tiledMap->getMapSize().width *  tiledMap->getTileSize().width) - winSize.width / 2);
-    y = MIN(y, ( tiledMap->getMapSize().height *  tiledMap->getTileSize().height) - winSize.height / 2);
+    // 计算缩放后的地图尺寸
+    float mapWidth = tiledMap->getMapSize().width * tiledMap->getTileSize().width * scale;
+    float mapHeight = tiledMap->getMapSize().height * tiledMap->getTileSize().height * scale;
+
+    // 确保视点不会超出地图的范围
+    x = MIN(x, mapWidth - winSize.width / 2);
+    y = MIN(y, mapHeight - winSize.height / 2);
+
+    // 计算视点实际位置
     auto actualPosition = Point(x, y);
 
+    // 屏幕中心点
     auto centerOfView = Point(winSize.width / 2, winSize.height / 2);
+
+    // 计算新的视点位置
     auto viewPoint = centerOfView - actualPosition;
+
+    // 更新视图位置
     this->setPosition(viewPoint);
 }
 
@@ -506,17 +436,22 @@ Point outside::tileCoordForPosition(cocos2d::Point position, cocos2d::TMXTiledMa
 }
 
 
-void outside::update(float delta, cocos2d::Sprite* _player) {
+void outside::update(float delta, cocos2d::Sprite* _player,cocos2d::TMXTiledMap* tiledMap) {
     Vec2 playerPosition = _player->getPosition();
 
     // 定义触发场景切换的位置
-    Vec2 triggerPosition = Vec2(900, 1300); // 您可以根据需要调整这个位置
+    Vec2 triggerPosition = Vec2(900, 1300); 
 
     // 检查玩家是否到达了触发位置
     if (playerPosition.x == triggerPosition.x && playerPosition.y == triggerPosition.y) {
         // 触发场景切换
         changeScene();
     }
+
+    Vec2 characterPosition = characteraction->getPosition();
+
+    // 更新视点，确保人物始终位于屏幕中心
+    setViewPointCenter(characterPosition, tiledMap);
 }
 
 void outside::changeScene() {
@@ -552,8 +487,10 @@ void outside::showPersonalInterface()
     // 加载初始图片窗口
     _menuWindow = Sprite::create("picture/1.png");
 
-    // 设置窗口位置为屏幕中央
-    _menuWindow->setPosition(Vec2(400,500));
+    Vec2 characterPosition = characteraction->getPosition();
+
+    // 将菜单设置为屏幕中央
+    _menuWindow->setPosition(characterPosition);
 
     // 设置窗口大小为屏幕的 80%
     _menuWindow->setScale(1.0f);
@@ -594,7 +531,7 @@ void outside::showPersonalInterface()
         );
 
         // 设置按钮的初始位置
-        button->setPosition(Vec2(-visibleSize.width / 2 + 80 * i, visibleSize.height / 2.55 - 80));
+        button->setPosition(Vec2(characterPosition.x-1600 + 80 * i, characterPosition.y- 170));
         buttonMenu->addChild(button, 0, i);
     }
 

@@ -32,7 +32,7 @@ public:
     void updateTime(float dt);
     void iniData(cocos2d::TMXTiledMap* map, cocos2d::Sprite* player);
 
-    void update(float delta, cocos2d::Sprite* _player);
+    void update(float delta, cocos2d::Sprite* _player, cocos2d::TMXTiledMap* tiledMap);
     void changeScene();
 
     // 显示竖排按钮
@@ -91,6 +91,6 @@ private:
     int _currentImageIndex;                // 当前图像索引
     int _selectedButtonIndex;              // 选择按钮索引
 
-    
+    class CharacterWithTools* characteraction;
 };
 #endif // !_HELLOWORLD_SCENE_H_
