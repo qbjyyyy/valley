@@ -384,5 +384,3 @@ void menu::onRightButtonClicked(Ref* sender) {
     float chfemaleScaleFactor = 0.35f; // 根据需要调整缩放比例
     rightButton->setScale(chfemaleScaleFactor); // 设置 chfemale 的缩放比例
 }
-
-

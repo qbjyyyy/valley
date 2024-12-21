@@ -37,7 +37,7 @@ public:
 
     // 显示竖排按钮
     void showVerticalButtons();
-
+    void showVerticalButtons2();
     // 移除竖排按钮
     void removeVerticalButtons();
 
@@ -49,6 +49,7 @@ public:
 
     // 展示个人界面
     void showPersonalInterface();
+    void hidePersonalInterface();
 
     // 关闭个人界面
     void closePersonalInterface(Ref* sender);
@@ -81,6 +82,7 @@ private:
     cocos2d::MenuItemImage* _npc3Button;   // npc3按钮
     std::chrono::high_resolution_clock::time_point gameStartTime; // 游戏开始时间
     int gameTime; // 游戏内的时间（以分钟为单位）
+    std::unordered_map<int, int> _buttonClickCounts;
 
     // 用于存储竖排按钮的层
     cocos2d::Layer * _verticalButtonLayer;
@@ -91,6 +93,10 @@ private:
     int _currentImageIndex;                // 当前图像索引
     int _selectedButtonIndex;              // 选择按钮索引
 
+    int _clickedButtonIndex; // 记录点击的按钮位置
     class CharacterWithTools* characteraction;
+
+    cocos2d::ParticleSystem* _rainParticleSystem;
+
 };
 #endif // !_HELLOWORLD_SCENE_H_

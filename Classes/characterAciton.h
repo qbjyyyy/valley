@@ -19,7 +19,7 @@ public:
     // ³õÊ¼»¯º¯Êý
     virtual bool init(const std::string& filename);
 
-    void move(const Vec2& direction);
+    void move();
 
     void update(float delta) override;
 private:
@@ -39,6 +39,7 @@ private:
     void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event);
 
     void usetools(const std::string& filename);
+
 };
 
 

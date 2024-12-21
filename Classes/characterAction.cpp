@@ -7,7 +7,7 @@
 #include "SimpleAudioEngine.h"
 #include "menu.h"
 #include "GameTimeSystem.h"
-
+#include "Plantingcrops.h"
 
 
 CharacterWithTools::CharacterWithTools():walkLeftAnimation(nullptr), walkRightAnimation(nullptr),
@@ -94,8 +94,7 @@ bool CharacterWithTools::init(const std::string& filename) {
 	return true;
 }
 
-void CharacterWithTools::move(const Vec2& direction) {
-	velocity = direction;
+void CharacterWithTools::move() {
 
     // 检查是否已经有相同标签的动作在运行
     auto action = this->getActionByTag(1);
@@ -168,28 +167,48 @@ void CharacterWithTools::usetools(const std::string& filename)
 
 void CharacterWithTools::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
+    velocity=Vec2::ZERO;
     switch (keyCode)
     {
         case EventKeyboard::KeyCode::KEY_J:
-            usetools("tools/axe.png");
+            usetools("tools/axe.png");//砍树
             break;
         case EventKeyboard::KeyCode::KEY_K:
-            usetools("tools/kettle.png");
+            usetools("tools/kettle.png");//浇水
             break;
         case EventKeyboard::KeyCode::KEY_L:
-            usetools("tools/pickaxe.png");
+            usetools("tools/pickaxe.png");//砍石头
             break;
         default:
             break;
     }
+    velocity=Vec2::ZERO;
+    if (keyCode == EventKeyboard::KeyCode::KEY_W)
+        velocity.y = 1;
+    if (keyCode == EventKeyboard::KeyCode::KEY_S)
+        velocity.y = -1; // 向下
+    if (keyCode == EventKeyboard::KeyCode::KEY_A)
+        velocity.x = -1; // 向左
+    if (keyCode == EventKeyboard::KeyCode::KEY_D)
+        velocity.x = 1; // 向右
+    this->move(); // 将键盘输入传递给角色
 }
 
 void CharacterWithTools::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
-
+    velocity = Vec2::ZERO;
+    if (keyCode == EventKeyboard::KeyCode::KEY_W)
+        velocity.y = 0;
+    if (keyCode == EventKeyboard::KeyCode::KEY_S)
+        velocity.y = 0; // 向下
+    if (keyCode == EventKeyboard::KeyCode::KEY_A)
+        velocity.x = 0; // 向左
+    if (keyCode == EventKeyboard::KeyCode::KEY_D)
+        velocity.x = 0; // 向右
+    this->move(); // 将键盘输入传递给角色
 }
 
 void CharacterWithTools::update(float delta) {
 	// 根据速度更新角色的位置
-	this->setPosition(this->getPosition() + velocity * delta * 100);
+	this->setPosition(this->getPosition() + velocity * delta * 1000);
 }
