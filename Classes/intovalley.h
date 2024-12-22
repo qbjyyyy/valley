@@ -13,16 +13,11 @@ public:
     friend class valleybegin;
     static cocos2d::Scene* createintovalleyScene();
     virtual bool init();
-    void update(float delta);
 
     CREATE_FUNC(intovalley);
     //进入下一个游戏界面
-    void intovalley::outdoor(Ref* obj);
-    void startTimer();
-    virtual void timeupdate(float dt);
 private:
-    std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
-    cocos2d::Label* timelable;
+    CharacterWithTools* characteraction;
 };
 #endif // !_INTOVALLEY.H
 

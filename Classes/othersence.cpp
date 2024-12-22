@@ -4,6 +4,7 @@
 #include"ui/CocosGUI.h"
 #include "cocos2d.h"
 #include "characterAciton.h"
+#include "SceneStateManager.h"
 USING_NS_CC;
 
 Scene* othersence::createothersenceScene()
@@ -15,6 +16,7 @@ Scene* othersence::createothersenceScene()
 }
 
 
+
 bool othersence::init()
 {
     if (!Layer::init())
@@ -22,7 +24,7 @@ bool othersence::init()
         return false;
     }
     //设置开始背景
-    auto tiledMap = TMXTiledMap::create("tiledmap/othersence.tmx");
+    auto tiledMap = TMXTiledMap::create("tiledmap/othersence1.tmx");
     this->addChild(tiledMap, 0);
    tiledMap->setScale(3);
 
@@ -31,6 +33,10 @@ bool othersence::init()
         CCLOG("Error: Failed to create character!");
         return false;
     }
+    auto button = ui::Button::create("picture/out1.png", "picture/out2.png"); // 按钮的正常状态和按下状态图片
+    button->setPosition(Vec2(3700,100));
+    this->addChild(button);
+
     characteraction->setPosition(Vec2(3030+500,0));
     this->addChild(characteraction);
 
@@ -40,27 +46,20 @@ bool othersence::init()
         // 获取人物当前的世界坐标
         Vec2 characterPosition = characteraction->getPosition();
 
-        if (characterPosition.x >= 3400 &&
-            characterPosition.x <= 3700 &&
-            characterPosition.y >= 0 &&
-            characterPosition.y <= 10)
-        {
-            // 如果人物进入指定范围，则切换场景
-            Scene* scene = outside::createSceneWithMapIndex(1);
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(0.5, scene));
-        }
-
         // 更新视点，确保地图始终跟随人物
         setViewPointCenter(characterPosition, tiledMap);
         }, "view_point_update_key");
 
-    auto keyboardListener = EventListenerKeyboard::create();
-    keyboardListener->onKeyPressed = [this](EventKeyboard::KeyCode keyCode, Event* event) {
-        };
-
-    keyboardListener->onKeyReleased = [this](EventKeyboard::KeyCode keyCode, Event* event) {
-        };
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
+    button->addClickEventListener([=](Ref* sender) {
+        // 回到旧场景时恢复状态
+        //Scene* previousScene = outside::createSceneWithMapIndex(1); // 创建旧场景
+        characteraction->setPosition(SceneStateManager::getInstance()->getCharacterPosition());
+        tiledMap->setName(SceneStateManager::getInstance()->getMapName());
+        //Director::getInstance()->replaceScene(TransitionCrossFade::create(0.5, previousScene));
+        if (Director::getInstance()->getRunningScene()) {
+            Director::getInstance()->popScene();
+        }
+        });
 
     return true;
 }

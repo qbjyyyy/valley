@@ -65,7 +65,6 @@ public:
 private:
     //cocos2d::TMXTiledMap* _tiledmap;
     cocos2d::TMXLayer* _background;
-    cocos2d::Sprite* _player;
     cocos2d::TMXLayer* _meta;
     cocos2d::TMXLayer* _foreground;
     cocos2d::TMXTiledMap* tiledMap_;
@@ -97,6 +96,11 @@ private:
     class CharacterWithTools* characteraction;
 
     cocos2d::ParticleSystem* _rainParticleSystem;
+
+    std::map<std::string, bool> inZones = {
+    {"zone1", false},
+    {"zone2", false}
+    };
 
 };
 #endif // !_HELLOWORLD_SCENE_H_

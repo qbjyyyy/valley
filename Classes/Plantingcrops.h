@@ -1,6 +1,3 @@
-#pragma once
-
-
 #ifndef __CROP_H__
 #define __CROP_H__
 
@@ -18,25 +15,28 @@ enum class State {
     seed,
     growing,
     matured,
-    harvested
+    harvested,
+    dead
 };
 class Crop :public Sprite {
 protected:
     State state;
+    double pregrowthTime;
     double growthTime;
     double matureTime;
+    bool watered;
+    // 按键事件处理
+    void onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event);
+    void onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event) {};
 public:
     virtual bool init(const std::string& filename);
-    static Crop* created(const std::string& filename);
+    static Crop* create(const std::string& filename);
     Crop();
-    ~Crop() {};
+    ~Crop();
     void update(float delta);
 
     // 获取作物的状态
     State getState() const;
-
-    // 获取作物的位置
-    Vec2 getposition() const;
 
     // 收获作物
     void harvest();

@@ -9,6 +9,7 @@
 #include "GameTimeSystem.h"
 #include "Plantingcrops.h"
 
+std::map<Vec2, bool> cropPositions;
 
 CharacterWithTools::CharacterWithTools():walkLeftAnimation(nullptr), walkRightAnimation(nullptr),
 walkUpAnimation(nullptr), walkDownAnimation(nullptr),
@@ -192,6 +193,15 @@ void CharacterWithTools::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* eve
     if (keyCode == EventKeyboard::KeyCode::KEY_D)
         velocity.x = 1; // 向右
     this->move(); // 将键盘输入传递给角色
+    if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {//按空格键种植
+        Vec2 position = this->getPosition();
+        if (position.x >= 350 * 3 &&
+            position.x <= (350 + 320) * 3 &&
+            position.y >= (830 - 300) * 3 &&
+            position.y <= 850 * 3) {//在田地范围内
+            plantcrop(position);
+        }
+    }
 }
 
 void CharacterWithTools::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
@@ -211,4 +221,47 @@ void CharacterWithTools::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* ev
 void CharacterWithTools::update(float delta) {
 	// 根据速度更新角色的位置
 	this->setPosition(this->getPosition() + velocity * delta * 1000);
+}
+
+bool CharacterWithTools::checkCrop(Vec2 position)
+{
+    // 计算该位置所在的网格
+    int gridX = static_cast<int>(position.x / gridWidth);
+    int gridY = static_cast<int>(position.y / gridHeight);
+
+    Vec2 gridPosition(gridX, gridY);  // 使用网格位置作为键
+
+    // 检查是否已经有作物
+    if (cropPositions.find(gridPosition) != cropPositions.end() && cropPositions[gridPosition]) {
+        return true;  // 该位置已有作物
+    }
+
+    return false;  // 该位置没有作物
+}
+
+void CharacterWithTools::plantcrop(Vec2 position)
+{
+    // 计算该位置所在的网格
+    int gridX = static_cast<int>(position.x / gridWidth);
+    int gridY = static_cast<int>(position.y / gridHeight);
+
+    Vec2 gridPosition(gridX, gridY);  // 使用网格位置作为键
+
+    //检查是否已经有农作物了
+    if (checkCrop(position))
+    {
+        CCLOG("Error: Crop already exists at this location!");
+        return;
+    }
+    auto crop = Crop::create("plant/cropseed.png");  // 创建作物
+    if (crop == nullptr) {
+        CCLOG("Error: Failed to plant crop!");
+        return;
+    }
+
+    crop->setPosition(Vec2(position.x, position.y - 50));
+    this->getParent()->addChild(crop);
+
+    // 将作物标记为已种植
+    cropPositions[gridPosition] = true;
 }

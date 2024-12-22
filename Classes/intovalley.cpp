@@ -2,6 +2,8 @@
 #include"cocostudio/CocoStudio.h"
 #include"ui/CocosGUI.h"
 #include "cocos2d.h"
+#include "SceneStateManager.h"
+#include "characterAciton.h"
 
 USING_NS_CC;
 
@@ -27,140 +29,37 @@ bool intovalley::init()
     spriteback->setPosition(Vec2(700, 200));
     this->addChild(spriteback);
 
-    timelable = Label::create();
-    timelable->setTextColor(Color4B::WHITE);
-    timelable->setSystemFontSize(48);
-    timelable->setPosition(1800, 900);
-    timelable->setString("00:00");
-    addChild(timelable);
 
-
-
-
-    //单张图组成帧动画
-    auto character = Sprite::create("picture/character1.png",Rect(0,0,144,156));
-    character->setPosition(Vec2(1080, 522));
-    character->setTag(0); // 设置角色的标签为0
-    this->addChild(character);
-
-    Vector<SpriteFrame*>move;
-    for (int i = 1; i <= 3; i++) {
-        char imagename[40];
-        sprintf(imagename, "picture/character%d.png", i);
-        SpriteFrame* spriteFrame = SpriteFrame::create(imagename, Rect(0, 0, 144, 156));
-        move.pushBack(spriteFrame);
+    characteraction = CharacterWithTools::create("character/Dana0.png");
+    if (characteraction == nullptr) {
+        CCLOG("Error: Failed to create character!");
+        return false;
     }
-    Animation* ani = Animation::createWithSpriteFrames(move,1);
-    Animate* animate = Animate::create(ani);
-    character->runAction(RepeatForever::create(animate));
+    auto button = ui::Button::create("picture/out1.png", "picture/out2.png"); // 按钮的正常状态和按下状态图片
+    button->setPosition(Vec2(975, 230));
+    this->addChild(button);
 
-    this->scheduleUpdate(); //这样每一帧都会进入 update 函数 我们在里面判断键盘有没有被按压住
-    auto listener = EventListenerKeyboard::create();
-    listener->onKeyPressed = [=](EventKeyboard::KeyCode keycode, Event* event) {
-        log("press");
-        keys[keycode] = true;
-            if (keycode == cocos2d::EventKeyboard::KeyCode::KEY_0) {
-                auto jump = JumpTo::create(0.5, Vec2(character->getPositionX(), character->getPositionY()), 70, 1);
-                character->runAction(jump);
-            }
-        };
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    listener->onKeyReleased = [=](EventKeyboard::KeyCode keycode, Event* event) {
-        log("release");
-        keys[keycode] = false;
-        };
+    characteraction->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+    this->addChild(characteraction);
 
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    this->scheduleUpdate();
+    // 在每帧中更新视点位置，使地图始终跟随人物
+    this->schedule([=](float deltaTime) {
+        // 获取人物当前的世界坐标
+        Vec2 characterPosition = characteraction->getPosition();
 
+        button->addClickEventListener([&](Ref* sender) {
+            // 回到旧场景时恢复状态
+            Scene* scene = outside::createSceneWithMapIndex(1);
+            Director::getInstance()->popScene();
+            });
 
-    //开始与退出按钮
-    auto outDr = MenuItemImage::create("picture/out1.png", "picture/out2.png"
-        , CC_CALLBACK_1(intovalley::outdoor, this));
-    outDr->setPosition(Vec2(975, 230));
-
-
-    auto menu = Menu::create(outDr,  NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu);
+        }, "view_point_update_key");
 
     return true;
 }
 
-
-
-void intovalley::update(float delta)
-{
-    auto left = cocos2d::EventKeyboard::KeyCode::KEY_LEFT_ARROW;
-    auto right = cocos2d::EventKeyboard::KeyCode::KEY_RIGHT_ARROW;
-    auto up = cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW;
-    auto down = cocos2d::EventKeyboard::KeyCode::KEY_DOWN_ARROW;
-    const int leftBoundary = 850;
-    const int rightBoundary = 1300; 
-    const int topBoundary = 750; 
-    const int bottomBoundary = 400;
-
-    int offsetX = 0;
-    int offsetY = 0;
-    if (keys[left]) {
-        offsetX = -2;
-    }
-    if (keys[right]) {
-        offsetX = 2;
-    }
-    if (keys[down]) {
-        offsetX = 2;
-    }
-    if (keys[up]) {
-        offsetY = 2;
-    }
-    if (keys[down]) {
-        offsetY = -2;
-        offsetX = 0;
-    }
-    if (offsetX == 0&&offsetY==0) {
-        return;
-    }
-
-    Node* sprite = this->getChildByTag(0);
-    Vec2 spritePosition = sprite->getPosition();
-    float newX = spritePosition.x + offsetX;
-    float newY = spritePosition.y + offsetY;
-    
-    if (newX < leftBoundary) {
-        newX = leftBoundary;
-    }
-    else if (newX > rightBoundary) {
-        newX = rightBoundary;
-    }
-    if (newY < bottomBoundary) {
-        newY = bottomBoundary;
-    }
-    else if (newY > topBoundary) {
-        newY = topBoundary;
-    }
-
-    if (newX > 1220 && newY < 550) {
-        newX = newX- 2*offsetX;
-        newY = newY - 2*offsetY;
-    }
-    if (newX > 1160 && newY > 650) {
-        newX = newX - 2 * offsetX;
-        newY = newY - 2 * offsetY;
-    }
-
-    auto moveTo = MoveTo::create(0.2, Vec2(newX, newY));
-    sprite->runAction(moveTo);
-
-}
-
-
-void intovalley::outdoor(Ref* obj) {
-    //Scene* scene = outside::createoutsideScene();
-    //Director::getInstance()->replaceScene(TransitionCrossFade::create(0.5, scene));
-}
-
-
-void intovalley::timeupdate(float dt) {
-
-}
 

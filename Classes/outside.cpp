@@ -9,6 +9,8 @@
 #include "characterAciton.h"
 #include "Plantingcrops.h"
 #include "othersence.h"
+#include "SceneStateManager.h"
+#include "Animal.h"
 
 using namespace CocosDenshion;
 
@@ -72,12 +74,42 @@ void outside::loadMapBackground(int mapIndex) {
         int x = spawnPoint["x"].asInt();
         int y = spawnPoint["y"].asInt();
 
+        //创建动物
+        //绵羊
+        for (int i = 0; i < 5; i++) {
+            auto sheep = Sheep::create("animal/Sheep1.png");
+            if (sheep == nullptr) {
+                CCLOG("Error: Failed to create sheep!");
+                return;
+            }
+            this->addChild(sheep);
+        }
 
+        //牛
+        auto cow=Cow::create("animal/Cow1.png");
+        if (cow == nullptr) {
+            CCLOG("Error: Failed to create cow!");
+            return;
+        }
+        cow->setScale(3);
+        this->addChild(cow);
+
+        //鹦鹉
+        auto parrot=Parrot::create("animal/Parrot1.png");
+        if (parrot == nullptr) {
+            CCLOG("Error: Failed to create parrot!");
+            return;
+        }
+        parrot->setScale(3);
+        this->addChild(parrot);
+
+        //创建主角人物
         characteraction = CharacterWithTools::create("character/Dana0.png");
         if (characteraction == nullptr) {
             CCLOG("Error: Failed to create character!");
             return;
         }
+
         characteraction->setPosition(Vec2(3 * x + 600, 3 * y + 2000));
         this->addChild(characteraction);
 
@@ -98,9 +130,20 @@ void outside::loadMapBackground(int mapIndex) {
                 characterPosition.y >= 3570 &&
                 characterPosition.y <= 3610)
             {
+                // 在切换场景之前保存状态
+                SceneStateManager::getInstance()->saveSceneState(
+                    characteraction->getPosition(),
+                    tiledMap->getName()
+                );
+                
                 // 如果人物进入指定范围，则切换场景
-                Scene* scene = intovalley::createintovalleyScene();
-                Director::getInstance()->replaceScene(TransitionCrossFade::create(0.5, scene));
+                if (!inZones["zone1"]) {
+                    Scene* scene = intovalley::createintovalleyScene();
+                    Director::getInstance()->pushScene(scene);
+                    inZones["zone1"] =true;
+                }
+                else
+                    inZones["zone1"] =false;
             }
 
             if (characterPosition.x >= 3000 &&
@@ -109,57 +152,16 @@ void outside::loadMapBackground(int mapIndex) {
                 characterPosition.y <= 4770)
             {
                 // 如果人物进入指定范围，则切换场景
-                Scene* scene = othersence::createothersenceScene();
-                Director::getInstance()->replaceScene(TransitionCrossFade::create(0.5, scene));
+                if (!inZones["zone2"]) {
+                    Scene* scene = othersence::createothersenceScene();
+                    Director::getInstance()->pushScene(scene);
+                    inZones["zone2"] = true;
+                }
+                else
+                    inZones["zone2"] = false;
             }
             }, "view_point_update_key");
-
-        
-
-        //backgroundLayer->addChild(characteraction);
-
-        auto keyboardListener = EventListenerKeyboard::create();
-        keyboardListener->onKeyPressed = [this](EventKeyboard::KeyCode keyCode, Event* event) {
-            if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {
-                Vec2 position = characteraction->getPosition();
-                auto crop = Crop::created("cropseed.png");//种植
-                if (crop == nullptr)
-                {
-                    CCLOG("Error: Failed to planting crop!");
-                    return;
-                }
-                crop->setPosition(Vec2(position.x,position.y-50));
-                this->addChild(crop);
-            }
-            };
-        keyboardListener->onKeyReleased = [this](EventKeyboard::KeyCode keyCode, Event* event) {
-            };
-        _eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
-        // 设置目标区域
       
-        targetArea = Rect(200,100,200, 200);
-      
-        auto listener2 = EventListenerTouchOneByOne::create();
-        listener2->onTouchBegan = [&](Touch* touch, Event* unused_event)->bool {
-            Vec2 touchLocation = touch->getLocation();
-            if (targetArea.containsPoint(touchLocation)) {
-                if (_lastSprite && _lastSprite->getPosition() != touchLocation) {
-                    this->removeChild(_lastSprite);
-                    _lastSprite = nullptr;
-                }
-
-                // 如果当前点击位置没有Sprite，则创建一个新的Sprite
-                if (!_lastSprite) {
-                    _lastSprite = Sprite::create("picture/lan.png");
-                    _lastSprite->setPosition(touchLocation);
-                    this->addChild(_lastSprite);
-                }
-                return true;
-            }
-            return false;
-            };
-        _eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, this);
-
     }
     else {
         log("Failed to load TMX file: %s", tmxFileName.c_str());
@@ -308,10 +310,6 @@ bool outside::init()
     std::strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
     std::string currentTime = buffer;
 
-    //// 创建并添加Label到场景中
-    //auto visibleSize = Director::getInstance()->getVisibleSize();
-    //Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
 
     auto dayLabel = Label::createWithTTF(dayOfWeek, "fonts/Marker Felt.ttf", 50);
     dayLabel->setAnchorPoint(Vec2(1, 1));
@@ -459,58 +457,6 @@ void outside::updateTime(float dt) {
         // 如果转换失败或者没有找到对应的Label，则打印错误信息或者进行其他错误处理
         CCLOG("Failed to get timeLabel or it's not a Label type");
     }
-}
-
-
-void outside::setPlayerPosition(cocos2d::Point position, cocos2d::TMXTiledMap* tiledMap) {
-    Point tileCoord = this->tileCoordForPosition(position, tiledMap);
-    int tileGid = _meta->getTileGIDAt(tileCoord);
-    if (tileGid) {
-        auto properties =  tiledMap->getPropertiesForGID(tileGid).asValueMap();
-        if (!properties.empty()) {
-            auto collision = properties["Collidable"].asString();
-            auto collectable = properties["Collectable"].asString();
-            if ("True" == collision) {
-                return;
-            }
-            if ("True" == collectable) {
-                _meta->removeTileAt(tileCoord);
-                _foreground->removeTileAt(tileCoord);
-
-            }
-        }
-    }
-    _player->setPosition(position);
-}
-
-
-void outside::onTouchEnded(Touch* touch, Event* unused_event, cocos2d::TMXTiledMap* tiledMap)
-{
-    auto touchLocation = touch->getLocation();
-    touchLocation = this->convertToNodeSpace(touchLocation);
-
-    auto playerPos = _player->getPosition();
-    auto diff = touchLocation - playerPos;
-    auto tileSize = tiledMap->getTileSize();
-    auto mapSize = tiledMap->getMapSize();
-
-    // 根据触摸位置计算新的玩家位置
-    if (abs(diff.x) > abs(diff.y)) {
-        playerPos.x += (diff.x > 0) ? tileSize.width : -tileSize.width;
-    }
-    else {
-        playerPos.y += (diff.y > 0) ? tileSize.height : -tileSize.height;
-    }
-
-    // 边界检查
-    playerPos.x = MIN(MAX(playerPos.x, tileSize.width / 2), (mapSize.width * tileSize.width) - tileSize.width / 2);
-    playerPos.y = MIN(MAX(playerPos.y, tileSize.height / 2), (mapSize.height * tileSize.height) - tileSize.height / 2);
-
-    // 设置玩家位置
-    this->setPlayerPosition(playerPos, tiledMap);
-
-    // 更新视口位置
-    this->setViewPointCenter(_player->getPosition(), tiledMap);
 }
 
 void outside::setViewPointCenter(Point position, cocos2d::TMXTiledMap* tiledMap) {
