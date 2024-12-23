@@ -29,7 +29,7 @@ Scene* outside::createSceneWithMapIndex(int mapIndex) {
 }
 
 void outside::loadMapBackground(int mapIndex) {
-    // ¸ù¾İµØÍ¼Ë÷Òı¼ÓÔØ²»Í¬µÄ TMX µØÍ¼ÎÄ¼ş
+    // æ ¹æ®åœ°å›¾ç´¢å¼•åŠ è½½ä¸åŒçš„ TMX åœ°å›¾æ–‡ä»¶
     std::string tmxFileName;
     switch (mapIndex) {
         case 0:
@@ -39,7 +39,7 @@ void outside::loadMapBackground(int mapIndex) {
             tmxFileName = "tiledmap/new.tmx";
             break;
         case 2:
-            tmxFileName = "tiledmap/Farm.tmx";
+            tmxFileName = "tiledmap/my_map.tmx";
             break;
         case 3:
             tmxFileName = "tiledmap/Farm.tmx";
@@ -48,19 +48,19 @@ void outside::loadMapBackground(int mapIndex) {
             //tmxFileName = "tiledmap/default.tmx";
             break;
     }
-    // ¼ÓÔØ±³¾°Í¼Æ¬
+    // åŠ è½½èƒŒæ™¯å›¾ç‰‡
     auto tiledMap = TMXTiledMap::create(tmxFileName);
     if (tiledMap) {
-        // ÉèÖÃµØÍ¼Î»ÖÃ
+        // è®¾ç½®åœ°å›¾ä½ç½®
         tiledMap->setPosition(Vec2(-500, -200));
         tiledMap->setScale(3);
         this->addChild(tiledMap, 0);
 
         auto imageView = ImageView::create("picture/time.png");
         if (imageView) {
-            // ÉèÖÃÎ»ÖÃ
+            // è®¾ç½®ä½ç½®
             imageView->setPosition(Vec2(3 * 1500 - 100, 3 * 1100 + 1450 - 100));
-            // Ìí¼Óµ½³¡¾°
+            // æ·»åŠ åˆ°åœºæ™¯
             this->addChild(imageView);
         }
        
@@ -74,8 +74,8 @@ void outside::loadMapBackground(int mapIndex) {
         int x = spawnPoint["x"].asInt();
         int y = spawnPoint["y"].asInt();
 
-        //´´½¨¶¯Îï
-        //ÃàÑò
+        //åˆ›å»ºåŠ¨ç‰©
+        //ç»µç¾Š
         for (int i = 0; i < 5; i++) {
             auto sheep = Sheep::create("animal/Sheep1.png");
             if (sheep == nullptr) {
@@ -85,7 +85,7 @@ void outside::loadMapBackground(int mapIndex) {
             this->addChild(sheep);
         }
 
-        //Å£
+        //ç‰›
         auto cow=Cow::create("animal/Cow1.png");
         if (cow == nullptr) {
             CCLOG("Error: Failed to create cow!");
@@ -94,7 +94,7 @@ void outside::loadMapBackground(int mapIndex) {
         cow->setScale(3);
         this->addChild(cow);
 
-        //ğĞğÄ
+        //é¹¦é¹‰
         auto parrot=Parrot::create("animal/Parrot1.png");
         if (parrot == nullptr) {
             CCLOG("Error: Failed to create parrot!");
@@ -103,7 +103,7 @@ void outside::loadMapBackground(int mapIndex) {
         parrot->setScale(3);
         this->addChild(parrot);
 
-        //´´½¨Ö÷½ÇÈËÎï
+        //åˆ›å»ºä¸»è§’äººç‰©
         characteraction = CharacterWithTools::create("character/Dana0.png");
         if (characteraction == nullptr) {
             CCLOG("Error: Failed to create character!");
@@ -114,14 +114,14 @@ void outside::loadMapBackground(int mapIndex) {
         this->addChild(characteraction);
 
         this->scheduleUpdate();
-        // ÔÚÃ¿Ö¡ÖĞ¸üĞÂÊÓµãÎ»ÖÃ£¬Ê¹µØÍ¼Ê¼ÖÕ¸úËæÈËÎï
+        // åœ¨æ¯å¸§ä¸­æ›´æ–°è§†ç‚¹ä½ç½®ï¼Œä½¿åœ°å›¾å§‹ç»ˆè·Ÿéšäººç‰©
             this->schedule([=](float deltaTime) {
-            // »ñÈ¡ÈËÎïµ±Ç°µÄÊÀ½ç×ø±ê
+            // è·å–äººç‰©å½“å‰çš„ä¸–ç•Œåæ ‡
             Vec2 characterPosition = characteraction->getPosition();
 
 
 
-            // ¸üĞÂÊÓµã£¬È·±£µØÍ¼Ê¼ÖÕ¸úËæÈËÎï
+            // æ›´æ–°è§†ç‚¹ï¼Œç¡®ä¿åœ°å›¾å§‹ç»ˆè·Ÿéšäººç‰©
             setViewPointCenter(characterPosition, tiledMap);
 
 
@@ -130,13 +130,13 @@ void outside::loadMapBackground(int mapIndex) {
                 characterPosition.y >= 3570 &&
                 characterPosition.y <= 3610)
             {
-                // ÔÚÇĞ»»³¡¾°Ö®Ç°±£´æ×´Ì¬
+                // åœ¨åˆ‡æ¢åœºæ™¯ä¹‹å‰ä¿å­˜çŠ¶æ€
                 SceneStateManager::getInstance()->saveSceneState(
                     characteraction->getPosition(),
                     tiledMap->getName()
                 );
                 
-                // Èç¹ûÈËÎï½øÈëÖ¸¶¨·¶Î§£¬ÔòÇĞ»»³¡¾°
+                // å¦‚æœäººç‰©è¿›å…¥æŒ‡å®šèŒƒå›´ï¼Œåˆ™åˆ‡æ¢åœºæ™¯
                 if (!inZones["zone1"]) {
                     Scene* scene = intovalley::createintovalleyScene();
                     Director::getInstance()->pushScene(scene);
@@ -151,7 +151,7 @@ void outside::loadMapBackground(int mapIndex) {
                 characterPosition.y >= 4740 &&
                 characterPosition.y <= 4770)
             {
-                // Èç¹ûÈËÎï½øÈëÖ¸¶¨·¶Î§£¬ÔòÇĞ»»³¡¾°
+                // å¦‚æœäººç‰©è¿›å…¥æŒ‡å®šèŒƒå›´ï¼Œåˆ™åˆ‡æ¢åœºæ™¯
                 if (!inZones["zone2"]) {
                     Scene* scene = othersence::createothersenceScene();
                     Director::getInstance()->pushScene(scene);
@@ -176,7 +176,7 @@ bool outside::init()
         return false;
     }
 
-    // ³õÊ¼»¯³ÉÔ±±äÁ¿
+    // åˆå§‹åŒ–æˆå‘˜å˜é‡
     _personalInterfaceLayer = nullptr;
     _menuWindow = nullptr;
     _closeButton = nullptr;
@@ -191,14 +191,14 @@ bool outside::init()
     _rainParticleSystem = ParticleRain::create();
     this->addChild(_rainParticleSystem, 12);
     _rainParticleSystem->setPosition(Vec2(3470, 3560));
-    _rainParticleSystem->resetSystem(); // ¿ªÊ¼·¢ÉäÁ£×Ó
-    _rainParticleSystem->setStartSize(10.0f); // Á£×ÓÉúÃüÖÜÆÚµÄ¿ªÊ¼´óĞ¡
-    _rainParticleSystem->setEndSize(20.0f);   // Á£×ÓÉúÃüÖÜÆÚµÄ½áÊø´óĞ¡
+    _rainParticleSystem->resetSystem(); // å¼€å§‹å‘å°„ç²’å­
+    _rainParticleSystem->setStartSize(10.0f); // ç²’å­ç”Ÿå‘½å‘¨æœŸçš„å¼€å§‹å¤§å°
+    _rainParticleSystem->setEndSize(20.0f);   // ç²’å­ç”Ÿå‘½å‘¨æœŸçš„ç»“æŸå¤§å°
 
-    // ÉèÖÃÁ£×ÓµÄ¿ªÊ¼ÑÕÉ«Îªº£µÄÀ¶É«£¨ÍêÈ«²»Í¸Ã÷£©
+    // è®¾ç½®ç²’å­çš„å¼€å§‹é¢œè‰²ä¸ºæµ·çš„è“è‰²ï¼ˆå®Œå…¨ä¸é€æ˜ï¼‰
     _rainParticleSystem->setStartColor(Color4F(0.0f, 0.5f, 1.0f, 1.0f));
 
-    // ÉèÖÃÁ£×ÓµÄ½áÊøÑÕÉ«Îªº£µÄÀ¶É«£¨°ëÍ¸Ã÷£©
+    // è®¾ç½®ç²’å­çš„ç»“æŸé¢œè‰²ä¸ºæµ·çš„è“è‰²ï¼ˆåŠé€æ˜ï¼‰
     _rainParticleSystem->setEndColor(Color4F(0.0f, 0.3f, 0.6f, 0.5f));
 
 
@@ -206,45 +206,45 @@ bool outside::init()
     _rainParticleSystem->setEndSize(15.0f);
 
     this->scheduleOnce([&](float dt) {
-        _rainParticleSystem->stopSystem(); // Í£Ö¹Á£×ÓÏµÍ³
+        _rainParticleSystem->stopSystem(); // åœæ­¢ç²’å­ç³»ç»Ÿ
         }, 40.0f, "stopRainTimer");
 
-    // Ìí¼Ó¼üÅÌÊÂ¼ş¼àÌıÆ÷
+    // æ·»åŠ é”®ç›˜äº‹ä»¶ç›‘å¬å™¨
     auto keyboardListener = EventListenerKeyboard::create();
     keyboardListener->onKeyPressed = CC_CALLBACK_2(outside::onKeyPressed, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 
 
-    // ´´½¨ NPC1 
-    auto npcButton = Button::create("bag/npc1.png", "bag/npc2.png"); // µã»÷Ç°Îª npc1.png£¬µã»÷ºóÎª npc2.png
+    // åˆ›å»º NPC1 
+    auto npcButton = Button::create("bag/npc1.png", "bag/npc2.png"); // ç‚¹å‡»å‰ä¸º npc1.pngï¼Œç‚¹å‡»åä¸º npc2.png
     npcButton->setPosition(Vec2(800, 700));
-    float scaleFactor = 4.0f; // ¸ù¾İĞèÒªµ÷ÕûËõ·Å±ÈÀı
+    float scaleFactor = 4.0f; // æ ¹æ®éœ€è¦è°ƒæ•´ç¼©æ”¾æ¯”ä¾‹
     npcButton->setScale(scaleFactor);
     this->addChild(npcButton, 5);
 
-    // Ìí¼Ó°´Å¥µã»÷ÊÂ¼ş¼àÌıÆ÷
+    // æ·»åŠ æŒ‰é’®ç‚¹å‡»äº‹ä»¶ç›‘å¬å™¨
     npcButton->addTouchEventListener([this, npcButton](Ref* sender, Widget::TouchEventType type) {
         if (type == Widget::TouchEventType::ENDED) {
-            // »ñÈ¡ NPC °´Å¥ºÍ½ÇÉ«µÄºá×ø±ê
+            // è·å– NPC æŒ‰é’®å’Œè§’è‰²çš„æ¨ªåæ ‡
             Vec2 npcPosition = npcButton->getPosition();
             Vec2 characterPosition = characteraction->getPosition();
-            float distance = characterPosition.x - npcPosition.x; // ¼ÆËãºá×ø±ê²îÖµ
+            float distance = characterPosition.x - npcPosition.x; // è®¡ç®—æ¨ªåæ ‡å·®å€¼
 
-            // Èç¹ûºá×ø±ê²îÖµĞ¡ÓÚ 100£¬ÔòÖ´ĞĞÂß¼­
+            // å¦‚æœæ¨ªåæ ‡å·®å€¼å°äº 100ï¼Œåˆ™æ‰§è¡Œé€»è¾‘
             if (distance < 100) {
-                // ÇĞ»»µ½ npc2.png
+                // åˆ‡æ¢åˆ° npc2.png
                 npcButton->loadTextureNormal("bag/npc2.png");
 
-                // µ¯³ö¶Ô»°¿ò
-                auto dialogBox = Sprite::create("picture/dialog.png"); // Ìæ»»ÎªÄãµÄ¶Ô»°¿òÍ¼Æ¬Â·¾¶
-                dialogBox->setPosition(Vec2(900, 400)); // ÉèÖÃ¶Ô»°¿òÎ»ÖÃ
+                // å¼¹å‡ºå¯¹è¯æ¡†
+                auto dialogBox = Sprite::create("picture/dialog.png"); // æ›¿æ¢ä¸ºä½ çš„å¯¹è¯æ¡†å›¾ç‰‡è·¯å¾„
+                dialogBox->setPosition(Vec2(900, 400)); // è®¾ç½®å¯¹è¯æ¡†ä½ç½®
                 dialogBox->setScale(0.6f);
-                this->addChild(dialogBox, 6); // È·±£¶Ô»°¿òÔÚ NPC °´Å¥ÉÏ·½
+                this->addChild(dialogBox, 6); // ç¡®ä¿å¯¹è¯æ¡†åœ¨ NPC æŒ‰é’®ä¸Šæ–¹
 
-                // 3 ÃëºóÒÆ³ı¶Ô»°¿ò²¢»Ö¸´
+                // 3 ç§’åç§»é™¤å¯¹è¯æ¡†å¹¶æ¢å¤
                 auto delay = DelayTime::create(3.0f);
                 auto restoreNPC = CallFunc::create([npcButton]() {
-                    npcButton->loadTextureNormal("bag/npc1.png"); // »Ö¸´Îª npc1.png
+                    npcButton->loadTextureNormal("bag/npc1.png"); // æ¢å¤ä¸º npc1.png
                     });
                 auto removeDialog = CallFunc::create([dialogBox]() {
                     dialogBox->removeFromParent();
@@ -255,34 +255,34 @@ bool outside::init()
         }
         });
 
-    // ´´½¨ NPC2 
-    auto npcButton1 = Button::create("bag/npc3.png", "bag/npc4.png"); // µã»÷Ç°Îª npc1.png£¬µã»÷ºóÎª npc2.png
+    // åˆ›å»º NPC2 
+    auto npcButton1 = Button::create("bag/npc3.png", "bag/npc4.png"); // ç‚¹å‡»å‰ä¸º npc1.pngï¼Œç‚¹å‡»åä¸º npc2.png
     npcButton1->setPosition(Vec2(4100, 650));
     npcButton1->setScale(0.8f);
     this->addChild(npcButton1, 5);
 
-    // Ìí¼Ó°´Å¥µã»÷ÊÂ¼ş¼àÌıÆ÷
+    // æ·»åŠ æŒ‰é’®ç‚¹å‡»äº‹ä»¶ç›‘å¬å™¨
     npcButton1->addTouchEventListener([this, npcButton1](Ref* sender, Widget::TouchEventType type) {
         if (type == Widget::TouchEventType::ENDED) {
-            // »ñÈ¡ NPC °´Å¥ºÍ½ÇÉ«µÄºá×ø±ê
+            // è·å– NPC æŒ‰é’®å’Œè§’è‰²çš„æ¨ªåæ ‡
             Vec2 npcPosition1 = npcButton1->getPosition();
             Vec2 characterPosition = characteraction->getPosition();
-            float distance = npcPosition1.x - characterPosition.x; // ¼ÆËãºá×ø±ê²îÖµ
+            float distance = npcPosition1.x - characterPosition.x; // è®¡ç®—æ¨ªåæ ‡å·®å€¼
 
-            // Èç¹ûºá×ø±ê²îÖµĞ¡ÓÚ 100£¬ÔòÖ´ĞĞÂß¼­
+            // å¦‚æœæ¨ªåæ ‡å·®å€¼å°äº 100ï¼Œåˆ™æ‰§è¡Œé€»è¾‘
             if (distance < 100) {
                 npcButton1->loadTextureNormal("bag/npc4.png");
 
-                // µ¯³ö¶Ô»°¿ò
-                auto dialogBox = Sprite::create("picture/dialog2.png"); // Ìæ»»ÎªÄãµÄ¶Ô»°¿òÍ¼Æ¬Â·¾¶
-                dialogBox->setPosition(Vec2(4100, 400)); // ÉèÖÃ¶Ô»°¿òÎ»ÖÃ
+                // å¼¹å‡ºå¯¹è¯æ¡†
+                auto dialogBox = Sprite::create("picture/dialog2.png"); // æ›¿æ¢ä¸ºä½ çš„å¯¹è¯æ¡†å›¾ç‰‡è·¯å¾„
+                dialogBox->setPosition(Vec2(4100, 400)); // è®¾ç½®å¯¹è¯æ¡†ä½ç½®
                 dialogBox->setScale(0.6f);
-                this->addChild(dialogBox, 6); // È·±£¶Ô»°¿òÔÚ NPC °´Å¥ÉÏ·½
+                this->addChild(dialogBox, 6); // ç¡®ä¿å¯¹è¯æ¡†åœ¨ NPC æŒ‰é’®ä¸Šæ–¹
 
-                // 3 ÃëºóÒÆ³ı¶Ô»°¿ò²¢»Ö¸´
+                // 3 ç§’åç§»é™¤å¯¹è¯æ¡†å¹¶æ¢å¤
                 auto delay = DelayTime::create(3.0f);
                 auto restoreNPC = CallFunc::create([npcButton1]() {
-                    npcButton1->loadTextureNormal("bag/npc3.png"); // »Ö¸´
+                    npcButton1->loadTextureNormal("bag/npc3.png"); // æ¢å¤
                     });
                 auto removeDialog = CallFunc::create([dialogBox]() {
                     dialogBox->removeFromParent();
@@ -299,13 +299,13 @@ bool outside::init()
     timeinfo = localtime(&rawtime);
 
 
-    // »ñÈ¡ĞÇÆÚ¼¸
+    // è·å–æ˜ŸæœŸå‡ 
     const char* days[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
     std::stringstream ss;
     ss << days[timeinfo->tm_wday] << ", ";
     std::string dayOfWeek = ss.str();
 
-    // »ñÈ¡µ±Ç°Ê±¼ä£¨²»°üº¬Ãë£©
+    // è·å–å½“å‰æ—¶é—´ï¼ˆä¸åŒ…å«ç§’ï¼‰
     char buffer[80];
     std::strftime(buffer, sizeof(buffer), "%H:%M", timeinfo);
     std::string currentTime = buffer;
@@ -322,22 +322,22 @@ bool outside::init()
     timeLabel->setPosition(Vec2(3 * 1500 - 125, 3 * 1100 + 1450 - 170));//1400, 1405
     this->addChild(timeLabel, 1);
 
-    // ¸üĞÂÓÎÏ·ÄÚÊ±¼ä
+    // æ›´æ–°æ¸¸æˆå†…æ—¶é—´
     schedule(schedule_selector(outside::updateTime), 1.0f);
 
    
-    // ´´½¨Ç©µ½´°¿Ú
+    // åˆ›å»ºç­¾åˆ°çª—å£
     auto qiandaoWindow = Sprite::create("picture/qiandao.png");
 
     qiandaoWindow->setPosition(3 * 890 + 600, 3 * 740 + 1300);
-    this->addChild(qiandaoWindow, 10); // ÉèÖÃ½Ï¸ßµÄzÖá£¬È·±£´°¿ÚÔÚ×îÉÏ²ã
+    this->addChild(qiandaoWindow, 10); // è®¾ç½®è¾ƒé«˜çš„zè½´ï¼Œç¡®ä¿çª—å£åœ¨æœ€ä¸Šå±‚
 
-    // ´´½¨Ç©µ½°´Å¥
+    // åˆ›å»ºç­¾åˆ°æŒ‰é’®
     auto qiandaoButton = Button::create("picture/bottom.png", "picture/bottom1.png");
     qiandaoButton->setPosition(Vec2(qiandaoWindow->getContentSize().width / 2, qiandaoWindow->getContentSize().height / 4));
     qiandaoButton->addTouchEventListener([qiandaoButton](Ref* sender, Widget::TouchEventType type) {
         if (type == Widget::TouchEventType::ENDED) {
-            // ÇĞ»»°´Å¥Í¼Æ¬
+            // åˆ‡æ¢æŒ‰é’®å›¾ç‰‡
             if (qiandaoButton->getRendererNormal()->getTexture() == Director::getInstance()->getTextureCache()->addImage("picture/bottom.png")) {
                 qiandaoButton->loadTextureNormal("picture/bottom1.png");
             }
@@ -348,19 +348,19 @@ bool outside::init()
         });
     qiandaoWindow->addChild(qiandaoButton);
 
-    // ´´½¨¹Ø±Õ°´Å¥
+    // åˆ›å»ºå…³é—­æŒ‰é’®
     auto closeButton = Button::create("picture/bottom2.png");
     closeButton->setPosition(Vec2(qiandaoWindow->getContentSize().width - closeButton->getContentSize().width / 2, qiandaoWindow->getContentSize().height - closeButton->getContentSize().height / 2));
     closeButton->addTouchEventListener([qiandaoWindow](Ref* sender, Widget::TouchEventType type) {
         if (type == Widget::TouchEventType::ENDED) {
-            // ¹Ø±ÕÇ©µ½´°¿Ú
+            // å…³é—­ç­¾åˆ°çª—å£
             qiandaoWindow->removeFromParentAndCleanup(true);
         }
         });
     qiandaoWindow->addChild(closeButton);
   
 
-    //µöÓã
+    //é’“é±¼
     auto fishing = Button::create("picture/tofish.png", "picture/tofish2.png");
     fishing->setPosition(Vec2(3 * 890 + 1000, 3 * 740 - 210));
     this->addChild(fishing,3);
@@ -376,7 +376,7 @@ bool outside::init()
 
                 spriteFish = Sprite::create("character/fishman1.png");
                 if (spriteFish == nullptr) {
-                    CCLOG("spriteFish Î´ÄÜ³É¹¦´´½¨!");
+                    CCLOG("spriteFish æœªèƒ½æˆåŠŸåˆ›å»º!");
                     return;
                 }
                 if (!spriteFish) {
@@ -392,10 +392,10 @@ bool outside::init()
                     std::string frameName = "character/fishman" + std::to_string(i) + ".png";
                     Fishing->addSpriteFrameWithFile(frameName);
                 }
-                Fishing->setDelayPerUnit(0.3f); // ÉèÖÃÃ¿Ö¡µÄ²¥·ÅÊ±¼ä
-                Fishing->setLoops(1); // ÉèÖÃÑ­»·²¥·Å
+                Fishing->setDelayPerUnit(0.3f); // è®¾ç½®æ¯å¸§çš„æ’­æ”¾æ—¶é—´
+                Fishing->setLoops(1); // è®¾ç½®å¾ªç¯æ’­æ”¾
                 Animate* FishingAnimate = Animate::create(Fishing);
-                Fishing->retain(); // ±£Áô¶¯»­¶ÔÏó£¬·ÀÖ¹±»ÊÍ·Å
+                Fishing->retain(); // ä¿ç•™åŠ¨ç”»å¯¹è±¡ï¼Œé˜²æ­¢è¢«é‡Šæ”¾
 
                 spriteFish->runAction(FishingAnimate);
                 _isfishingVisible = true;
@@ -431,60 +431,60 @@ void outside::updateTime(float dt) {
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
-    // ¼ÆËã´ÓÓÎÏ·¿ªÊ¼µ½ÏÖÔÚµÄÏÖÊµÊ±¼äÁ÷ÊÅ£¨ÒÔÃëÎªµ¥Î»£©
+    // è®¡ç®—ä»æ¸¸æˆå¼€å§‹åˆ°ç°åœ¨çš„ç°å®æ—¶é—´æµé€ï¼ˆä»¥ç§’ä¸ºå•ä½ï¼‰
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(currentTime - gameStartTime).count();
 
-    // ½«ÏÖÊµÊ±¼ä×ª»»ÎªÓÎÏ·ÄÚÊ±¼ä£¨Ã¿0.7ÃëµÈÓÚÓÎÏ·ÄÚµÄÒ»·ÖÖÓ£©
+    // å°†ç°å®æ—¶é—´è½¬æ¢ä¸ºæ¸¸æˆå†…æ—¶é—´ï¼ˆæ¯0.7ç§’ç­‰äºæ¸¸æˆå†…çš„ä¸€åˆ†é’Ÿï¼‰
     int elapsedTime = static_cast<int>(duration / 0.7f);
     time_t rawtime;
     time(&rawtime);
     struct tm* timeinfo = localtime(&rawtime);
 
-    // ¸üĞÂ·ÖÖÓÊı
+    // æ›´æ–°åˆ†é’Ÿæ•°
     timeinfo->tm_min += elapsedTime / 60;
-    mktime(timeinfo); // ¸üĞÂÊ±¼ä½á¹¹Ìå
+    mktime(timeinfo); // æ›´æ–°æ—¶é—´ç»“æ„ä½“
 
-    // ¸üĞÂLabel
+    // æ›´æ–°Label
     char buffer[80];
     std::strftime(buffer, sizeof(buffer), "%H:%M", timeinfo); 
 
-    // »ñÈ¡Label²¢¸üĞÂ×Ö·û´®
+    // è·å–Labelå¹¶æ›´æ–°å­—ç¬¦ä¸²
     auto label = dynamic_cast<Label*>(getChildByName("timeLabel"));
     if (label) {
         label->setString(buffer);
     }
     else {
-        // Èç¹û×ª»»Ê§°Ü»òÕßÃ»ÓĞÕÒµ½¶ÔÓ¦µÄLabel£¬Ôò´òÓ¡´íÎóĞÅÏ¢»òÕß½øĞĞÆäËû´íÎó´¦Àí
+        // å¦‚æœè½¬æ¢å¤±è´¥æˆ–è€…æ²¡æœ‰æ‰¾åˆ°å¯¹åº”çš„Labelï¼Œåˆ™æ‰“å°é”™è¯¯ä¿¡æ¯æˆ–è€…è¿›è¡Œå…¶ä»–é”™è¯¯å¤„ç†
         CCLOG("Failed to get timeLabel or it's not a Label type");
     }
 }
 
 void outside::setViewPointCenter(Point position, cocos2d::TMXTiledMap* tiledMap) {
     const auto winSize = Director::getInstance()->getWinSize();
-    float scale = tiledMap->getScale(); // »ñÈ¡µ±Ç°µÄËõ·Å±ÈÀı
+    float scale = tiledMap->getScale(); // è·å–å½“å‰çš„ç¼©æ”¾æ¯”ä¾‹
 
-    // ¼ÆËãÊµ¼ÊµÄÊÓÍ¼ÖĞĞÄ×ø±ê£¨¿¼ÂÇËõ·Å£©
+    // è®¡ç®—å®é™…çš„è§†å›¾ä¸­å¿ƒåæ ‡ï¼ˆè€ƒè™‘ç¼©æ”¾ï¼‰
     int x = MAX(position.x, winSize.width / 2);
     int y = MAX(position.y, winSize.height / 2);
 
-    // ¼ÆËãËõ·ÅºóµÄµØÍ¼³ß´ç
+    // è®¡ç®—ç¼©æ”¾åçš„åœ°å›¾å°ºå¯¸
     float mapWidth = tiledMap->getMapSize().width * tiledMap->getTileSize().width * scale;
     float mapHeight = tiledMap->getMapSize().height * tiledMap->getTileSize().height * scale;
 
-    // È·±£ÊÓµã²»»á³¬³öµØÍ¼µÄ·¶Î§
+    // ç¡®ä¿è§†ç‚¹ä¸ä¼šè¶…å‡ºåœ°å›¾çš„èŒƒå›´
     x = MIN(x, mapWidth - winSize.width / 2);
     y = MIN(y, mapHeight - winSize.height / 2);
 
-    // ¼ÆËãÊÓµãÊµ¼ÊÎ»ÖÃ
+    // è®¡ç®—è§†ç‚¹å®é™…ä½ç½®
     auto actualPosition = Point(x, y);
 
-    // ÆÁÄ»ÖĞĞÄµã
+    // å±å¹•ä¸­å¿ƒç‚¹
     auto centerOfView = Point(winSize.width / 2, winSize.height / 2);
 
-    // ¼ÆËãĞÂµÄÊÓµãÎ»ÖÃ
+    // è®¡ç®—æ–°çš„è§†ç‚¹ä½ç½®
     auto viewPoint = centerOfView - actualPosition;
 
-    // ¸üĞÂÊÓÍ¼Î»ÖÃ
+    // æ›´æ–°è§†å›¾ä½ç½®
     this->setPosition(viewPoint);
 }
 
@@ -500,23 +500,23 @@ Point outside::tileCoordForPosition(cocos2d::Point position, cocos2d::TMXTiledMa
 void outside::update(float delta, cocos2d::Sprite* _player,cocos2d::TMXTiledMap* tiledMap) {
     Vec2 playerPosition = _player->getPosition();
 
-    // ¶¨Òå´¥·¢³¡¾°ÇĞ»»µÄÎ»ÖÃ
+    // å®šä¹‰è§¦å‘åœºæ™¯åˆ‡æ¢çš„ä½ç½®
     Vec2 triggerPosition = Vec2(900, 1300); 
 
-    // ¼ì²éÍæ¼ÒÊÇ·ñµ½´ïÁË´¥·¢Î»ÖÃ
+    // æ£€æŸ¥ç©å®¶æ˜¯å¦åˆ°è¾¾äº†è§¦å‘ä½ç½®
     if (playerPosition.x == triggerPosition.x && playerPosition.y == triggerPosition.y) {
-        // ´¥·¢³¡¾°ÇĞ»»
+        // è§¦å‘åœºæ™¯åˆ‡æ¢
         changeScene();
     }
 
     Vec2 characterPosition = characteraction->getPosition();
 
-    // ¸üĞÂÊÓµã£¬È·±£ÈËÎïÊ¼ÖÕÎ»ÓÚÆÁÄ»ÖĞĞÄ
+    // æ›´æ–°è§†ç‚¹ï¼Œç¡®ä¿äººç‰©å§‹ç»ˆä½äºå±å¹•ä¸­å¿ƒ
     setViewPointCenter(characterPosition, tiledMap);
 }
 
 void outside::changeScene() {
-    // ´´½¨²¢ÇĞ»»µ½Scene2
+    // åˆ›å»ºå¹¶åˆ‡æ¢åˆ°Scene2
     auto scene = intovalley::createintovalleyScene(); 
     Director::getInstance()->replaceScene(scene);
 }
@@ -524,10 +524,10 @@ void outside::changeScene() {
 
 void outside::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
-    // ¼ì²é°´ÏÂµÄ¼üÊÇ·ñÎª E ¼ü
+    // æ£€æŸ¥æŒ‰ä¸‹çš„é”®æ˜¯å¦ä¸º E é”®
     if (keyCode == EventKeyboard::KeyCode::KEY_E)
     {
-        // ÇĞ»»¸öÈË½çÃæµÄÏÔÊ¾×´Ì¬
+        // åˆ‡æ¢ä¸ªäººç•Œé¢çš„æ˜¾ç¤ºçŠ¶æ€
         if (_isPersonalInterfaceVisible)
         {
             hidePersonalInterface();
@@ -541,11 +541,11 @@ void outside::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 
 void outside::hidePersonalInterface()
 {
-    // Òş²Ø¸öÈË½çÃæµÄÂß¼­
+    // éšè—ä¸ªäººç•Œé¢çš„é€»è¾‘
     if (_personalInterfaceLayer)
     {
-        this->removeChild(_personalInterfaceLayer); // ÒÆ³ı¸öÈË½çÃæ²ã
-        _personalInterfaceLayer = nullptr; // Çå¿Õ²ãÖ¸Õë
+        this->removeChild(_personalInterfaceLayer); // ç§»é™¤ä¸ªäººç•Œé¢å±‚
+        _personalInterfaceLayer = nullptr; // æ¸…ç©ºå±‚æŒ‡é’ˆ
     }
     _isPersonalInterfaceVisible = false;
 }
@@ -557,40 +557,40 @@ void outside::showPersonalInterface()
 
     _isPersonalInterfaceVisible = true;
 
-    // ´´½¨¸öÈË½çÃæ²ã
+    // åˆ›å»ºä¸ªäººç•Œé¢å±‚
     _personalInterfaceLayer = Layer::create();
-    this->addChild(_personalInterfaceLayer, 10); // È·±£Õâ¸ö²ãÔÚÆäËû²ãÖ®ÉÏ
+    this->addChild(_personalInterfaceLayer, 10); // ç¡®ä¿è¿™ä¸ªå±‚åœ¨å…¶ä»–å±‚ä¹‹ä¸Š
 
-    // ¼ÓÔØ³õÊ¼Í¼Æ¬´°¿Ú
+    // åŠ è½½åˆå§‹å›¾ç‰‡çª—å£
     _menuWindow = Sprite::create("bag/1.png");
 
     Vec2 characterPosition = characteraction->getPosition();
 
-    // ½«²Ëµ¥ÉèÖÃÎªÆÁÄ»ÖĞÑë
+    // å°†èœå•è®¾ç½®ä¸ºå±å¹•ä¸­å¤®
     _menuWindow->setPosition(characterPosition);
 
-    // ÉèÖÃ´°¿Ú´óĞ¡
+    // è®¾ç½®çª—å£å¤§å°
     _menuWindow->setScale(1.0f);
 
     _personalInterfaceLayer->addChild(_menuWindow);
 
-    // ´´½¨¹Ø±Õ°´Å¥
+    // åˆ›å»ºå…³é—­æŒ‰é’®
     _closeButton = MenuItemImage::create(
         "picture/bottom2.png",
         "picture/bottom2.png",
-        CC_CALLBACK_1(outside::closePersonalInterface, this) // Ê¹ÓÃ CC_CALLBACK_1 °ó¶¨ this
+        CC_CALLBACK_1(outside::closePersonalInterface, this) // ä½¿ç”¨ CC_CALLBACK_1 ç»‘å®š this
     );
 
-    // ÉèÖÃ¹Ø±Õ°´Å¥µÄÎ»ÖÃ
+    // è®¾ç½®å…³é—­æŒ‰é’®çš„ä½ç½®
     auto windowSize = _menuWindow->getContentSize();
-    _closeButton->setPosition(Vec2(windowSize.width - _closeButton->getContentSize().width / 2 + 60, windowSize.height - _closeButton->getContentSize().height / 2 + 60)); // ÔÚ´°¿ÚÄÚÊÊµ±Î»ÖÃ
+    _closeButton->setPosition(Vec2(windowSize.width - _closeButton->getContentSize().width / 2 + 60, windowSize.height - _closeButton->getContentSize().height / 2 + 60)); // åœ¨çª—å£å†…é€‚å½“ä½ç½®
 
-    // ´´½¨²Ëµ¥²¢Ìí¼Ó¹Ø±Õ°´Å¥
+    // åˆ›å»ºèœå•å¹¶æ·»åŠ å…³é—­æŒ‰é’®
     auto closeMenu = Menu::create(_closeButton, NULL);
     closeMenu->setPosition(Vec2::ZERO);
     _menuWindow->addChild(closeMenu);
 
-    // ´´½¨¶¥²¿µÄÑ¡Ôñ°´Å¥
+    // åˆ›å»ºé¡¶éƒ¨çš„é€‰æ‹©æŒ‰é’®
     auto visibleSize = Director::getInstance()->getVisibleSize();
     auto buttonMenu = Menu::create();
 
@@ -607,7 +607,7 @@ void outside::showPersonalInterface()
             }
         );
 
-        // ÉèÖÃ°´Å¥µÄ³õÊ¼Î»ÖÃ
+        // è®¾ç½®æŒ‰é’®çš„åˆå§‹ä½ç½®
         button->setPosition(Vec2(characterPosition.x - 1600 + 80 * i, characterPosition.y - 170));
         buttonMenu->addChild(button, 0, i);
     }
@@ -624,39 +624,39 @@ void outside::selectImage(int index)
 
     removeVerticalButtons();
 
-    // ¸üĞÂÖ÷Í¼Æ¬
+    // æ›´æ–°ä¸»å›¾ç‰‡
     std::string imageName = StringUtils::format("bag/%d.png", _currentImageIndex);
 
-    // Èç¹ûµ±Ç°Ñ¡ÔñµÄÍ¼Æ¬ÊÇ 3.png£¬ÔòÏÔÊ¾ÊúÅÅ°´Å¥
-    if (index == 1) // ¼ÙÉèÔÚÑ¡Ôñ 1.png Ê±Ìí¼Ó¿ÉÍÏ¶¯µÄÍ¼Æ¬
+    // å¦‚æœå½“å‰é€‰æ‹©çš„å›¾ç‰‡æ˜¯ 3.pngï¼Œåˆ™æ˜¾ç¤ºç«–æ’æŒ‰é’®
+    if (index == 1) // å‡è®¾åœ¨é€‰æ‹© 1.png æ—¶æ·»åŠ å¯æ‹–åŠ¨çš„å›¾ç‰‡
     {
-        // »ñÈ¡µ±Ç°´°¿ÚµÄ´óĞ¡
+        // è·å–å½“å‰çª—å£çš„å¤§å°
         auto windowSize = _menuWindow->getContentSize();
 
-        // »ñÈ¡ _menuWindow µÄÎ»ÖÃ
+        // è·å– _menuWindow çš„ä½ç½®
         Vec2 menuWindowPosition = _menuWindow->getPosition();
 
         auto draggableSprite = Sprite::create("bag/tool1.png");
 
-        float scaleFactor = 4.0f; // ¸ù¾İĞèÒªµ÷ÕûËõ·Å±ÈÀı
+        float scaleFactor = 4.0f; // æ ¹æ®éœ€è¦è°ƒæ•´ç¼©æ”¾æ¯”ä¾‹
         draggableSprite->setScale(scaleFactor);
 
-        // ÉèÖÃ¾«ÁéµÄÎ»ÖÃÎª _menuWindow µÄÖĞĞÄÎ»ÖÃ
+        // è®¾ç½®ç²¾çµçš„ä½ç½®ä¸º _menuWindow çš„ä¸­å¿ƒä½ç½®
         draggableSprite->setPosition(Vec2(windowSize.width - 200, windowSize.height - 300));
 
         _menuWindow->addChild(draggableSprite, 10);
 
 
-        // Ìí¼ÓÀ¬»øÍ°
+        // æ·»åŠ åƒåœ¾æ¡¶
         auto trashCanSprite = Sprite::create("bag/trashcan.png");
-        trashCanSprite->setPosition(Vec2(windowSize.width + 50, windowSize.height - 500)); // ÉèÖÃÀ¬»øÍ°Î»ÖÃ
+        trashCanSprite->setPosition(Vec2(windowSize.width + 50, windowSize.height - 500)); // è®¾ç½®åƒåœ¾æ¡¶ä½ç½®
         _menuWindow->addChild(trashCanSprite);
 
-        // ÉèÖÃÍÏ¶¯ÊÂ¼ş
+        // è®¾ç½®æ‹–åŠ¨äº‹ä»¶
         auto listener = EventListenerTouchOneByOne::create();
         listener->setSwallowTouches(true);
 
-        // ¿ªÊ¼ÍÏ¶¯
+        // å¼€å§‹æ‹–åŠ¨
         listener->onTouchBegan = [=](Touch* touch, Event* event) {
             auto target = static_cast<Sprite*>(event->getCurrentTarget());
             Vec2 touchPoint = target->convertToNodeSpace(touch->getLocation());
@@ -668,35 +668,35 @@ void outside::selectImage(int index)
             return false;
             };
 
-        // ÍÏ¶¯ÖĞ
+        // æ‹–åŠ¨ä¸­
         listener->onTouchMoved = [=](Touch* touch, Event* event) {
             auto target = static_cast<Sprite*>(event->getCurrentTarget());
             target->setPosition(target->getPosition() + touch->getDelta());
             };
 
-        // ÍÏ¶¯½áÊø
+        // æ‹–åŠ¨ç»“æŸ
         listener->onTouchEnded = [=](Touch* touch, Event* event) {
             auto target = static_cast<Sprite*>(event->getCurrentTarget());
             Vec2 endPosition = target->getPosition();
 
-            // ¼ì²âÊÇ·ñÍÏ¶¯µ½À¬»øÍ°Î»ÖÃ
+            // æ£€æµ‹æ˜¯å¦æ‹–åŠ¨åˆ°åƒåœ¾æ¡¶ä½ç½®
             Rect trashCanRect = trashCanSprite->getBoundingBox();
             if (trashCanRect.containsPoint(endPosition))
             {
-                // ÒÆ³ı¿ÉÍÏ¶¯µÄÍ¼Æ¬
+                // ç§»é™¤å¯æ‹–åŠ¨çš„å›¾ç‰‡
                 target->removeFromParentAndCleanup(true);
             }
             };
 
-        // ×¢²áÊÂ¼ş¼àÌıÆ÷
+        // æ³¨å†Œäº‹ä»¶ç›‘å¬å™¨
         _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, draggableSprite);
 
-        // ÏÔÊ¾ money ±äÁ¿
-        int money = 500; // ³õÊ¼ÖµÎª 500
+        // æ˜¾ç¤º money å˜é‡
+        int money = 500; // åˆå§‹å€¼ä¸º 500
         auto moneyLabel = Label::createWithSystemFont(StringUtils::format("%d", money), "Arial", 30);
-        moneyLabel->setColor(Color3B::BLACK); // ÉèÖÃ×ÖÌåÑÕÉ«Îª°×É«
-        moneyLabel->setPosition(Vec2(windowSize.width / 2 + 200, windowSize.height / 2 - 110)); // ÉèÖÃÎ»ÖÃÎª´°¿ÚÖĞĞÄ
-        _menuWindow->addChild(moneyLabel, 20); // Ìí¼Óµ½ _menuWindow£¬²ã¼¶¸ßÓÚÆäËûÔªËØ
+        moneyLabel->setColor(Color3B::BLACK); // è®¾ç½®å­—ä½“é¢œè‰²ä¸ºç™½è‰²
+        moneyLabel->setPosition(Vec2(windowSize.width / 2 + 200, windowSize.height / 2 - 110)); // è®¾ç½®ä½ç½®ä¸ºçª—å£ä¸­å¿ƒ
+        _menuWindow->addChild(moneyLabel, 20); // æ·»åŠ åˆ° _menuWindowï¼Œå±‚çº§é«˜äºå…¶ä»–å…ƒç´ 
 
 
     }
@@ -714,11 +714,11 @@ void outside::selectImage(int index)
         _menuWindow->setTexture(imageName);
     }
 
-    // »ñÈ¡²Ëµ¥°´Å¥
+    // è·å–èœå•æŒ‰é’®
     auto buttonMenu = dynamic_cast<Menu*>(_personalInterfaceLayer->getChildByTag(1));
     if (!buttonMenu) return;
 
-    // ±éÀúËùÓĞ°´Å¥£¬¸üĞÂ°´Å¥µÄÎ»ÒÆĞ§¹û
+    // éå†æ‰€æœ‰æŒ‰é’®ï¼Œæ›´æ–°æŒ‰é’®çš„ä½ç§»æ•ˆæœ
     for (int i = 1; i <= 7; ++i)
     {
         auto button = dynamic_cast<MenuItemImage*>(buttonMenu->getChildByTag(i));
@@ -726,11 +726,11 @@ void outside::selectImage(int index)
         {
             if (i == index)
             {
-                button->setPositionY(button->getPositionY() - 10); // ÏÂÒÆĞ§¹û
+                button->setPositionY(button->getPositionY() - 10); // ä¸‹ç§»æ•ˆæœ
             }
             else
             {
-                button->setPositionY(button->getPositionY() + 10); // »Ö¸´³õÊ¼Î»ÖÃ
+                button->setPositionY(button->getPositionY() + 10); // æ¢å¤åˆå§‹ä½ç½®
             }
         }
     }
@@ -739,24 +739,24 @@ void outside::selectImage(int index)
 
 void outside::showVerticalButtons()
 {
-    // »ñÈ¡µ±Ç°´°¿ÚµÄ´óĞ¡
+    // è·å–å½“å‰çª—å£çš„å¤§å°
     auto windowSize = _menuWindow->getContentSize();
 
-    // ´´½¨Ò»¸ö²ãÀ´·ÅÖÃ°´Å¥
+    // åˆ›å»ºä¸€ä¸ªå±‚æ¥æ”¾ç½®æŒ‰é’®
     auto buttonLayer = Layer::create();
-    buttonLayer->setName("buttonLayer"); // ÉèÖÃ²ãµÄÃû³Æ£¬È·±£¿ÉÒÔ±»ÕıÈ·²¶×½
+    buttonLayer->setName("buttonLayer"); // è®¾ç½®å±‚çš„åç§°ï¼Œç¡®ä¿å¯ä»¥è¢«æ­£ç¡®æ•æ‰
     _menuWindow->addChild(buttonLayer);
 
-    // ÔÚ 3.png Í¼Æ¬ÉÏÊúÅÅ·ÅÖÃ 5 ¸ö°´Å¥ bottom3.1.png
+    // åœ¨ 3.png å›¾ç‰‡ä¸Šç«–æ’æ”¾ç½® 5 ä¸ªæŒ‰é’® bottom3.1.png
     for (int i = 1; i <= 5; ++i)
     {
         auto button = Button::create("picture/giftbottom1.png", "picture/giftbottom1.png");
-        button->setPosition(Vec2(windowSize.width / 2 + 300, windowSize.height + 90 - 125 * i)); // ÊúÖ±ÅÅÁĞ
-        button->setTag(i); // Îª°´Å¥ÉèÖÃÎ¨Ò»µÄ Tag
+        button->setPosition(Vec2(windowSize.width / 2 + 300, windowSize.height + 90 - 125 * i)); // ç«–ç›´æ’åˆ—
+        button->setTag(i); // ä¸ºæŒ‰é’®è®¾ç½®å”¯ä¸€çš„ Tag
         button->addTouchEventListener([this, i](Ref* sender, Widget::TouchEventType type) {
             if (type == Widget::TouchEventType::ENDED) {
-                _clickedButtonIndex = i; // ¼ÇÂ¼µã»÷µÄ°´Å¥Î»ÖÃ
-                showNewWindow(); // µã»÷°´Å¥ºóÌø³öĞÂµÄ´°¿Ú
+                _clickedButtonIndex = i; // è®°å½•ç‚¹å‡»çš„æŒ‰é’®ä½ç½®
+                showNewWindow(); // ç‚¹å‡»æŒ‰é’®åè·³å‡ºæ–°çš„çª—å£
             }
             });
         buttonLayer->addChild(button);
@@ -766,26 +766,26 @@ void outside::showVerticalButtons()
 
 void outside::showVerticalButtons2()
 {
-    // »ñÈ¡µ±Ç°´°¿ÚµÄ´óĞ¡
+    // è·å–å½“å‰çª—å£çš„å¤§å°
     auto windowSize = _menuWindow->getContentSize();
 
-    // ´´½¨Ò»¸ö²ãÀ´·ÅÖÃ°´Å¥
+    // åˆ›å»ºä¸€ä¸ªå±‚æ¥æ”¾ç½®æŒ‰é’®
     auto buttonLayer = Layer::create();
-    buttonLayer->setName("buttonLayer"); // ÉèÖÃ²ãµÄÃû³Æ£¬È·±£¿ÉÒÔ±»ÕıÈ·²¶×½
+    buttonLayer->setName("buttonLayer"); // è®¾ç½®å±‚çš„åç§°ï¼Œç¡®ä¿å¯ä»¥è¢«æ­£ç¡®æ•æ‰
     _menuWindow->addChild(buttonLayer);
 
-    // ÔÚ 6.png Í¼Æ¬ÉÏÊúÅÅ·ÅÖÃ 4 ¸ö°´Å¥ bottom3.1.png
+    // åœ¨ 6.png å›¾ç‰‡ä¸Šç«–æ’æ”¾ç½® 4 ä¸ªæŒ‰é’® bottom3.1.png
     for (int i = 1; i <= 4; ++i)
     {
         auto button = Button::create("picture/bottom.png", "picture/bottom2.png");
-        button->setPosition(Vec2(windowSize.width / 6 - 90, windowSize.height - 70 - 90 * i)); // ÊúÖ±ÅÅÁĞ
+        button->setPosition(Vec2(windowSize.width / 6 - 90, windowSize.height - 70 - 90 * i)); // ç«–ç›´æ’åˆ—
         button->setTag(i);
 
-        // Ìí¼Ó´¥ÃşÊÂ¼ş¼àÌıÆ÷
+        // æ·»åŠ è§¦æ‘¸äº‹ä»¶ç›‘å¬å™¨
         button->addTouchEventListener([this, button](Ref* sender, Widget::TouchEventType type) {
-            // ÅĞ¶Ï´¥ÃşÊÂ¼şÀàĞÍ
+            // åˆ¤æ–­è§¦æ‘¸äº‹ä»¶ç±»å‹
             if (type == Widget::TouchEventType::ENDED) {
-                // ÇĞ»»°´Å¥×´Ì¬
+                // åˆ‡æ¢æŒ‰é’®çŠ¶æ€
                 if (button->getRendererNormal()->getTexture() == Director::getInstance()->getTextureCache()->addImage("picture/bottom.png")) {
                     button->loadTextureNormal("picture/bottom2.png");
                 }
@@ -802,61 +802,61 @@ void outside::showVerticalButtons2()
 
 void outside::removeVerticalButtons()
 {
-    // ÒÆ³ıËùÓĞÊúÅÅ°´Å¥
+    // ç§»é™¤æ‰€æœ‰ç«–æ’æŒ‰é’®
     _menuWindow->removeAllChildrenWithCleanup(true);
 }
 
 void outside::showNewWindow()
 {
-    // ´´½¨ĞÂµÄ´°¿Ú
+    // åˆ›å»ºæ–°çš„çª—å£
     auto newWindow = Sprite::create("picture/back.png");
 
     Vec2 characterPosition = characteraction->getPosition();
 
-    // ½«²Ëµ¥ÉèÖÃÎªÆÁÄ»ÖĞÑë
+    // å°†èœå•è®¾ç½®ä¸ºå±å¹•ä¸­å¤®
     newWindow->setPosition(characterPosition);
     newWindow->setScale(1.0f);
 
-    // Ìí¼Óµ½¸öÈË½çÃæ²ã
-    _personalInterfaceLayer->addChild(newWindow, 11); // È·±£ĞÂ´°¿ÚÔÚ×îÉÏ²ã
+    // æ·»åŠ åˆ°ä¸ªäººç•Œé¢å±‚
+    _personalInterfaceLayer->addChild(newWindow, 11); // ç¡®ä¿æ–°çª—å£åœ¨æœ€ä¸Šå±‚
 
-    // ´´½¨¹Ø±ÕĞÂ´°¿ÚµÄ°´Å¥
+    // åˆ›å»ºå…³é—­æ–°çª—å£çš„æŒ‰é’®
     auto closeNewWindowButton = Button::create("picture/ok1.png", "picture/ok1.png");
-    float scaleFactor = 1.5f; // ¸ù¾İĞèÒªµ÷ÕûËõ·Å±ÈÀı
+    float scaleFactor = 1.5f; // æ ¹æ®éœ€è¦è°ƒæ•´ç¼©æ”¾æ¯”ä¾‹
     closeNewWindowButton->setScale(scaleFactor);
     closeNewWindowButton->setPosition(Vec2(newWindow->getContentSize().width - closeNewWindowButton->getContentSize().width / 2 - 100, newWindow->getContentSize().height - closeNewWindowButton->getContentSize().height / 2 - 800));
     closeNewWindowButton->addTouchEventListener([newWindow, this](Ref* sender, Widget::TouchEventType type) {
         if (type == Widget::TouchEventType::ENDED) {
-            // ¹Ø±ÕĞÂ´°¿Ú
+            // å…³é—­æ–°çª—å£
             newWindow->removeFromParent();
 
-            // »ñÈ¡°´Å¥²ã
+            // è·å–æŒ‰é’®å±‚
             auto buttonLayer = dynamic_cast<Layer*>(_menuWindow->getChildByName("buttonLayer"));
             if (buttonLayer) {
                 auto giftButton = dynamic_cast<Button*>(buttonLayer->getChildByTag(_clickedButtonIndex));
                 if (giftButton) {
-                    // »ñÈ¡µ±Ç°°´Å¥µÄµã»÷´ÎÊı
+                    // è·å–å½“å‰æŒ‰é’®çš„ç‚¹å‡»æ¬¡æ•°
                     int clickCount = _buttonClickCounts[_clickedButtonIndex]++;
-                    // ¸ù¾İµã»÷´ÎÊı¾ö¶¨ÊÇ·ñÌí¼Ó¶ÔºÅ°´Å¥
+                    // æ ¹æ®ç‚¹å‡»æ¬¡æ•°å†³å®šæ˜¯å¦æ·»åŠ å¯¹å·æŒ‰é’®
                     if (clickCount < 2) {
                         auto bottomButton = Button::create("picture/bottom1.png", "picture/bottom1.png");
-                        float scaleFactor = 0.8f; // ¸ù¾İĞèÒªµ÷ÕûËõ·Å±ÈÀı
+                        float scaleFactor = 0.8f; // æ ¹æ®éœ€è¦è°ƒæ•´ç¼©æ”¾æ¯”ä¾‹
                         bottomButton->setScale(scaleFactor);
 
-                        // ¸ù¾İµã»÷´ÎÊıµ÷Õû¶ÔºÅ°´Å¥µÄÎ»ÖÃ
-                        float offsetX = clickCount * 48; // Ã¿´Îµã»÷ÏòÓÒÆ«ÒÆ 30 ÏñËØ
+                        // æ ¹æ®ç‚¹å‡»æ¬¡æ•°è°ƒæ•´å¯¹å·æŒ‰é’®çš„ä½ç½®
+                        float offsetX = clickCount * 48; // æ¯æ¬¡ç‚¹å‡»å‘å³åç§» 30 åƒç´ 
                         bottomButton->setPosition(Vec2(giftButton->getPositionX() - 30 + offsetX, giftButton->getPositionY() - 57));
 
                         buttonLayer->addChild(bottomButton);
                     }
                     if (clickCount == 2) {
 
-                        auto popupImage = Sprite::create("bag/back.png"); // Ìæ»»ÎªÄãµÄµ¯³öÍ¼Æ¬Â·¾¶ 
+                        auto popupImage = Sprite::create("bag/back.png"); // æ›¿æ¢ä¸ºä½ çš„å¼¹å‡ºå›¾ç‰‡è·¯å¾„ 
                         popupImage->setPosition(Vec2(giftButton->getPositionX() - 30, giftButton->getPositionY() - 57));
                         popupImage->setScale(0.5f);
                         buttonLayer->addChild(popupImage);
 
-                        // 5ÃëºóÒÆ³ıµ¯³öÍ¼Æ¬
+                        // 5ç§’åç§»é™¤å¼¹å‡ºå›¾ç‰‡
                         auto delay = DelayTime::create(2.0f);
                         auto removePopup = CallFunc::create([popupImage]() {
                             popupImage->removeFromParent();
@@ -873,28 +873,28 @@ void outside::showNewWindow()
         });
     newWindow->addChild(closeNewWindowButton);
 
-    // ´´½¨6¸ö°´Å¥²¢ºáÏòÅÅÁĞ
+    // åˆ›å»º6ä¸ªæŒ‰é’®å¹¶æ¨ªå‘æ’åˆ—
     std::vector<Button*> giftButtons;
     for (int i = 1; i <= 6; ++i) {
         auto giftButton = Button::create("picture/gift" + std::to_string(i) + ".png", "picture/gift" + std::to_string(i) + ".png");
-        float scaleFactor = 3.0f; // ¸ù¾İĞèÒªµ÷ÕûËõ·Å±ÈÀı
+        float scaleFactor = 3.0f; // æ ¹æ®éœ€è¦è°ƒæ•´ç¼©æ”¾æ¯”ä¾‹
         giftButton->setScale(scaleFactor);
-        giftButton->setPosition(Vec2(100 + (i - 1) * 150, 800)); // ºáÏòÅÅÁĞ£¬Ã¿¸ö°´Å¥¼ä¸ô150ÏñËØ
+        giftButton->setPosition(Vec2(100 + (i - 1) * 150, 800)); // æ¨ªå‘æ’åˆ—ï¼Œæ¯ä¸ªæŒ‰é’®é—´éš”150åƒç´ 
         giftButton->addTouchEventListener([newWindow, &giftButtons](Ref* sender, Widget::TouchEventType type) {
             if (type == Widget::TouchEventType::ENDED) {
                 auto button = static_cast<Button*>(sender);
-                // ´¦Àí°´Å¥µã»÷ÊÂ¼ş
+                // å¤„ç†æŒ‰é’®ç‚¹å‡»äº‹ä»¶
             }
             });
         newWindow->addChild(giftButton);
         giftButtons.push_back(giftButton);
 
-        // ÔÚÃ¿¸ö°´Å¥ÏÂÃæÌí¼ÓÒ»¸ö bottom.png °´Å¥
+        // åœ¨æ¯ä¸ªæŒ‰é’®ä¸‹é¢æ·»åŠ ä¸€ä¸ª bottom.png æŒ‰é’®
         auto bottomButton = Button::create("picture/bottom.png", "picture/bottom1.png");
-        bottomButton->setPosition(Vec2(giftButton->getPositionX(), giftButton->getPositionY() - 100)); // ÔÚ°´Å¥ÏÂ·½100ÏñËØ´¦
+        bottomButton->setPosition(Vec2(giftButton->getPositionX(), giftButton->getPositionY() - 100)); // åœ¨æŒ‰é’®ä¸‹æ–¹100åƒç´ å¤„
         bottomButton->addTouchEventListener([bottomButton](Ref* sender, Widget::TouchEventType type) {
             if (type == Widget::TouchEventType::ENDED) {
-                // ÇĞ»»°´Å¥×´Ì¬
+                // åˆ‡æ¢æŒ‰é’®çŠ¶æ€
                 if (bottomButton->getRendererNormal()->getTexture() == Director::getInstance()->getTextureCache()->addImage("picture/bottom.png")) {
                     bottomButton->loadTextureNormal("picture/bottom1.png");
                 }
@@ -914,7 +914,7 @@ void outside::closePersonalInterface(Ref* sender)
 
     _isPersonalInterfaceVisible = false;
 
-    // ÒÆ³ı¸öÈË½çÃæ²ã
+    // ç§»é™¤ä¸ªäººç•Œé¢å±‚
     _personalInterfaceLayer->removeFromParent();
     _personalInterfaceLayer = nullptr;
 }
